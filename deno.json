@@ -20,5 +20,11 @@
     "rules": {
       "exclude": ["no-slow-types"]
     }
+  },
+  "test": {
+    "include": ["**/*.test.ts"]
+  },
+  "tasks": {
+    "test": "deno test --allow-all"
   }
 }

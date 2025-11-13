@@ -102,6 +102,7 @@ export const preTool = z.discriminatedUnion("type", [
 /* Tool-specific input schemas for PostToolUse */
 const postToolInputs = {
   read: z.object({
+    type: tag("Read"),
     tool_name: z.literal("Read"),
     tool_input: z.object({
       file_path: z.string(),
@@ -114,6 +115,7 @@ const postToolInputs = {
   }),
 
   write: z.object({
+    type: tag("Write"),
     tool_name: z.literal("Write"),
     tool_input: z.object({
       file_path: z.string(),
@@ -123,6 +125,7 @@ const postToolInputs = {
   }),
 
   edit: z.object({
+    type: tag("Edit"),
     tool_name: z.literal("Edit"),
     tool_input: z.object({
       file_path: z.string(),
@@ -134,6 +137,7 @@ const postToolInputs = {
   }),
 
   glob: z.object({
+    type: tag("Glob"),
     tool_name: z.literal("Glob"),
     tool_input: z.object({
       pattern: z.string(),
@@ -145,6 +149,7 @@ const postToolInputs = {
   }),
 
   notebookEdit: z.object({
+    type: tag("NotebookEdit"),
     tool_name: z.literal("NotebookEdit"),
     tool_input: z.object({
       notebook_path: z.string(),
@@ -158,6 +163,7 @@ const postToolInputs = {
 
   /** Fallback for unknown tools in PostToolUse */
   unknown: z.object({
+    type: tag("Other"),
     tool_name: z.string(),
 
     /** Input arguments for the tool call.

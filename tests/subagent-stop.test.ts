@@ -1,0 +1,36 @@
+import { assertEquals } from "@std/assert";
+import { z } from "zod";
+import { subagentStopInput } from "../schemas/hooks.ts";
+import { resolveHookPath, testHook } from "../testing.ts";
+
+const hookPath = resolveHookPath(import.meta.url, "./hooks/subagent-stop.ts");
+
+Deno.test("subagentStop - blocks stop when hook is not active", async () => {
+  const input: z.input<typeof subagentStopInput> = {
+    hook_event_name: "SubagentStop",
+    session_id: "test-session",
+    transcript_path: "/tmp/transcript.json",
+    cwd: "/tmp",
+    stop_hook_active: false,
+  };
+
+  const output = await testHook(hookPath, input);
+
+  assertEquals(output.decision, "block");
+  assertEquals(output.reason, "Please provide a summary of completed work");
+});
+
+Deno.test("subagentStop - allows stop when hook is already active", async () => {
+  const input: z.input<typeof subagentStopInput> = {
+    hook_event_name: "SubagentStop",
+    session_id: "test-session",
+    transcript_path: "/tmp/transcript.json",
+    cwd: "/tmp",
+    stop_hook_active: true,
+  };
+
+  const output = await testHook(hookPath, input);
+
+  assertEquals(output.decision, "allow");
+  assertEquals(output.reason, undefined);
+});
