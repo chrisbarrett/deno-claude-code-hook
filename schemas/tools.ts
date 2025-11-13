@@ -2,19 +2,9 @@
  */
 import { z } from "zod";
 
-/** Summons a hacky discriminator from the netherworld to help type inference
-    for `z.discriminatedUnion`
- */
-const tag = <T extends string>(s: T): z.ZodLiteral<T> =>
-  z
-    .never()
-    .optional()
-    // deno-lint-ignore no-explicit-any
-    .default(s as any) as any;
-
 const preToolInputs = {
   read: z.object({
-    type: tag("Read"),
+    type: z.literal("Read"),
     tool_name: z.literal("Read"),
     tool_input: z.object({
       file_path: z.string(),
@@ -24,7 +14,7 @@ const preToolInputs = {
   }),
 
   write: z.object({
-    type: tag("Write"),
+    type: z.literal("Write"),
     tool_name: z.literal("Write"),
     tool_input: z.object({
       file_path: z.string(),
@@ -33,7 +23,7 @@ const preToolInputs = {
   }),
 
   edit: z.object({
-    type: tag("Edit"),
+    type: z.literal("Edit"),
     tool_name: z.literal("Edit"),
     tool_input: z.object({
       file_path: z.string(),
@@ -44,7 +34,7 @@ const preToolInputs = {
   }),
 
   glob: z.object({
-    type: tag("Glob"),
+    type: z.literal("Glob"),
     tool_name: z.literal("Glob"),
     tool_input: z.object({
       pattern: z.string(),
@@ -53,7 +43,7 @@ const preToolInputs = {
   }),
 
   notebookEdit: z.object({
-    type: tag("NotebookEdit"),
+    type: z.literal("NotebookEdit"),
     tool_name: z.literal("NotebookEdit"),
     tool_input: z.object({
       notebook_path: z.string(),
@@ -66,7 +56,7 @@ const preToolInputs = {
 
   /** Fallback for unknown tools in PreToolUse */
   unknown: z.object({
-    type: tag("Other"),
+    type: z.literal("Other"),
 
     /** Name of the tool.
 
@@ -90,19 +80,36 @@ const preToolInputs = {
 
     Refine `type` using an if or switch statement to get additional type-safety.
  */
-export const preTool = z.discriminatedUnion("type", [
-  preToolInputs.read,
-  preToolInputs.write,
-  preToolInputs.edit,
-  preToolInputs.glob,
-  preToolInputs.notebookEdit,
-  preToolInputs.unknown,
-]);
+export const preTool = z.preprocess(
+  // deno-lint-ignore no-explicit-any
+  (it: any) => {
+    if (typeof it !== "object") {
+      return it;
+    }
+
+    if (Object.keys(it ?? {}).length === 0) {
+      return it;
+    }
+
+    // Map known tool names to their types, fallback to "Other"
+    const knownTools = ["Read", "Write", "Edit", "Glob", "NotebookEdit"];
+    it.type = knownTools.includes(it.tool_name) ? it.tool_name : "Other";
+    return it;
+  },
+  z.discriminatedUnion("type", [
+    preToolInputs.read,
+    preToolInputs.write,
+    preToolInputs.edit,
+    preToolInputs.glob,
+    preToolInputs.notebookEdit,
+    preToolInputs.unknown,
+  ]),
+);
 
 /* Tool-specific input schemas for PostToolUse */
 const postToolInputs = {
   read: z.object({
-    type: tag("Read"),
+    type: z.literal("Read"),
     tool_name: z.literal("Read"),
     tool_input: z.object({
       file_path: z.string(),
@@ -115,7 +122,7 @@ const postToolInputs = {
   }),
 
   write: z.object({
-    type: tag("Write"),
+    type: z.literal("Write"),
     tool_name: z.literal("Write"),
     tool_input: z.object({
       file_path: z.string(),
@@ -125,7 +132,7 @@ const postToolInputs = {
   }),
 
   edit: z.object({
-    type: tag("Edit"),
+    type: z.literal("Edit"),
     tool_name: z.literal("Edit"),
     tool_input: z.object({
       file_path: z.string(),
@@ -137,7 +144,7 @@ const postToolInputs = {
   }),
 
   glob: z.object({
-    type: tag("Glob"),
+    type: z.literal("Glob"),
     tool_name: z.literal("Glob"),
     tool_input: z.object({
       pattern: z.string(),
@@ -149,7 +156,7 @@ const postToolInputs = {
   }),
 
   notebookEdit: z.object({
-    type: tag("NotebookEdit"),
+    type: z.literal("NotebookEdit"),
     tool_name: z.literal("NotebookEdit"),
     tool_input: z.object({
       notebook_path: z.string(),
@@ -163,7 +170,7 @@ const postToolInputs = {
 
   /** Fallback for unknown tools in PostToolUse */
   unknown: z.object({
-    type: tag("Other"),
+    type: z.literal("Other"),
     tool_name: z.string(),
 
     /** Input arguments for the tool call.
@@ -184,11 +191,28 @@ const postToolInputs = {
 
     Refine `type` using an if or switch statement to get additional type-safety.
  */
-export const postTool = z.discriminatedUnion("type", [
-  postToolInputs.read,
-  postToolInputs.write,
-  postToolInputs.edit,
-  postToolInputs.glob,
-  postToolInputs.notebookEdit,
-  postToolInputs.unknown,
-]);
+export const postTool = z.preprocess(
+  // deno-lint-ignore no-explicit-any
+  (it: any) => {
+    if (typeof it !== "object") {
+      return it;
+    }
+
+    if (Object.keys(it ?? {}).length === 0) {
+      return it;
+    }
+
+    // Map known tool names to their types, fallback to "Other"
+    const knownTools = ["Read", "Write", "Edit", "Glob", "NotebookEdit"];
+    it.type = knownTools.includes(it.tool_name) ? it.tool_name : "Other";
+    return it;
+  },
+  z.discriminatedUnion("type", [
+    postToolInputs.read,
+    postToolInputs.write,
+    postToolInputs.edit,
+    postToolInputs.glob,
+    postToolInputs.notebookEdit,
+    postToolInputs.unknown,
+  ]),
+);
