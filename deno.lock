@@ -16,7 +16,7 @@
     "jsr:@std/io@0.225": "0.225.2",
     "jsr:@std/path@1": "1.1.2",
     "jsr:@std/path@^1.1.1": "1.1.2",
-    "jsr:@zod/zod@*": "4.1.12"
+    "jsr:@zod/zod@^4.1.12": "4.1.12"
   },
   "jsr": {
     "@david/console-static-text@0.3.0": {
@@ -87,7 +87,7 @@
       "jsr:@david/dax@~0.43.2",
       "jsr:@std/assert@^1.0.15",
       "jsr:@std/bytes@^1.0.6",
-      "jsr:@zod/zod@*"
+      "jsr:@zod/zod@^4.1.12"
     ]
   }
 }
