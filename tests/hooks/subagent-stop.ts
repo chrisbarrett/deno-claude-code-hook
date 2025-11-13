@@ -2,7 +2,7 @@
 
 import { subagentStop } from "../../mod.ts";
 
-subagentStop(async (input) => {
+subagentStop((input) => {
   // Don't allow recursive stop hooks to prevent infinite loops
   if (input.stop_hook_active) {
     return {

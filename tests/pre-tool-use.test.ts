@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
-import { z } from "zod";
-import { preToolUseInput } from "../schemas/hooks.ts";
+import type { z } from "zod";
+import type { preToolUseInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
 
 const hookPath = resolveHookPath(import.meta.url, "./hooks/pre-tool-use.ts");

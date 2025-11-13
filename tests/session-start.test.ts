@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
-import { z } from "zod";
-import { sessionStartInput } from "../schemas/hooks.ts";
+import type { z } from "zod";
+import type { sessionStartInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
 
 const hookPath = resolveHookPath(import.meta.url, "./hooks/session-start.ts");

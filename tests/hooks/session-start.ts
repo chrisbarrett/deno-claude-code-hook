@@ -2,7 +2,7 @@
 
 import { sessionStart } from "../../mod.ts";
 
-sessionStart(async (input) => {
+sessionStart((input) => {
   // Add context based on session source
   let contextMessage = "";
 

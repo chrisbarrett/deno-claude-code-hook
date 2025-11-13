@@ -2,11 +2,14 @@
 
 import { userPromptSubmit } from "../../mod.ts";
 
-userPromptSubmit(async (input) => {
+userPromptSubmit((input) => {
   const prompt = input.prompt.toLowerCase();
 
   // Block dangerous prompts
-  if (prompt.includes("delete production") || prompt.includes("drop database")) {
+  if (
+    prompt.includes("delete production") ||
+    prompt.includes("drop database")
+  ) {
     return {
       decision: "block",
       reason: "Dangerous operations blocked in production environment",
@@ -19,7 +22,8 @@ userPromptSubmit(async (input) => {
       decision: "allow",
       hookSpecificOutput: {
         hookEventName: "UserPromptSubmit",
-        additionalContext: "You are working on tests. Prioritize test-related suggestions.",
+        additionalContext:
+          "You are working on tests. Prioritize test-related suggestions.",
       },
     };
   }

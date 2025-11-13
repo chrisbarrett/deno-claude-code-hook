@@ -2,7 +2,7 @@
 
 import { sessionEnd } from "../../mod.ts";
 
-sessionEnd(async (input) => {
+sessionEnd((input) => {
   // Log the reason for session end
   console.error(`[SESSION_END] Reason: ${input.reason}`);
 

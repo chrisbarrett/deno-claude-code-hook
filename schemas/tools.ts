@@ -72,7 +72,8 @@ const preToolInputs = {
     tool_input: z.object({
       pattern: z.string(),
       path: z.string().optional(),
-      output_mode: z.enum(["content", "files_with_matches", "count"]).optional(),
+      output_mode: z.enum(["content", "files_with_matches", "count"])
+        .optional(),
       glob: z.string().optional(),
       type: z.string().optional(),
       "-i": z.boolean().optional(),
@@ -135,7 +136,16 @@ export const preTool = z.preprocess(
     }
 
     // Map known tool names to their types, fallback to "Other"
-    const knownTools = ["Read", "Write", "Edit", "Glob", "NotebookEdit", "Bash", "Grep", "Task"];
+    const knownTools = [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "NotebookEdit",
+      "Bash",
+      "Grep",
+      "Task",
+    ];
     it.type = knownTools.includes(it.tool_name) ? it.tool_name : "Other";
     return it;
   },
@@ -237,7 +247,8 @@ const postToolInputs = {
     tool_input: z.object({
       pattern: z.string(),
       path: z.string().optional(),
-      output_mode: z.enum(["content", "files_with_matches", "count"]).optional(),
+      output_mode: z.enum(["content", "files_with_matches", "count"])
+        .optional(),
       glob: z.string().optional(),
       type: z.string().optional(),
       "-i": z.boolean().optional(),
@@ -305,7 +316,16 @@ export const postTool = z.preprocess(
     }
 
     // Map known tool names to their types, fallback to "Other"
-    const knownTools = ["Read", "Write", "Edit", "Glob", "NotebookEdit", "Bash", "Grep", "Task"];
+    const knownTools = [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "NotebookEdit",
+      "Bash",
+      "Grep",
+      "Task",
+    ];
     it.type = knownTools.includes(it.tool_name) ? it.tool_name : "Other";
     return it;
   },

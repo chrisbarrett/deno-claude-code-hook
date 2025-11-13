@@ -2,7 +2,7 @@
 
 import { preToolUse } from "../../mod.ts";
 
-preToolUse(async (input) => {
+preToolUse((input) => {
   // Block Write tool
   if (input.tool_name === "Write") {
     return {

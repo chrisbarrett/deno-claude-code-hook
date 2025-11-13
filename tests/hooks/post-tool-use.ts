@@ -2,14 +2,15 @@
 
 import { postToolUse } from "../../mod.ts";
 
-postToolUse(async (input) => {
+postToolUse((input) => {
   // Check for failed bash commands
   if (input.tool_name === "Bash" && input.tool_response.exit_code !== 0) {
     return {
       decision: "allow",
       hookSpecificOutput: {
         hookEventName: "PostToolUse",
-        additionalContext: `Command failed with exit code ${input.tool_response.exit_code}`,
+        additionalContext:
+          `Command failed with exit code ${input.tool_response.exit_code}`,
       },
     };
   }

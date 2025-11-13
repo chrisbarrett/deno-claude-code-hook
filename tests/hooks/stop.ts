@@ -2,7 +2,7 @@
 
 import { stop } from "../../mod.ts";
 
-stop(async (input) => {
+stop((input) => {
   // Don't allow recursive stop hooks to prevent infinite loops
   if (input.stop_hook_active) {
     return {

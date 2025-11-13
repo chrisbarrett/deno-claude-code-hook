@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
-import { z } from "zod";
-import { subagentStopInput } from "../schemas/hooks.ts";
+import type { z } from "zod";
+import type { subagentStopInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
 
 const hookPath = resolveHookPath(import.meta.url, "./hooks/subagent-stop.ts");
