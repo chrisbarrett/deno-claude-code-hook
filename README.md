@@ -153,7 +153,7 @@ types guide you.
 ```typescript
 // Void return (no output)
 sessionStart(async (input) => {
-  console.log("Session started");
+  console.error("Session started");
   // No return needed
 });
 

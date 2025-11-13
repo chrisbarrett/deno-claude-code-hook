@@ -1,23 +1,47 @@
 /**
- * Type-safe wrapper functions for constructing Claude Code hooks.
+ * Type-safe Deno library for building [Claude Code](https://code.claude.com) hooks
+ * with runtime validation. Using this lib you can write self-contained hook
+ * scripts with LSP completions and editor squiggles to guide you.
  *
- * This library uses Zod schemas for runtime validation of hook inputs and outputs,
- * ensuring type safety for all Claude Code hook events.
+ * ## Quick Start
  *
- * @example Basic usage
+ * The example below will teach Claude Code to use the `say` command on macOS to
+ * announce when it's compacting. The announcement is a bit terser if compaction
+ * was user-initiated via `/compact`.
+ *
  * ```typescript
- * import { sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
+ * #!/usr/bin/env -S deno run --allow-read --allow-run
+ * import { preCompact } from "jsr:@chrisbarrett/claude-code-hook";
+ * import $ from "jsr:@david/dax";
  *
- * sessionStart(async (input) => {
- *   console.log("Session started in:", input.workingDirectory);
+ * preCompact(async (input) => {
+ *   const message = input.trigger === "auto"
+ *     ? "Auto-compaction started"
+ *     : "Compacting";
  *
- *   return {
- *     hookSpecificOutput: {
- *       hookEventName: "SessionStart",
- *       additionalContext: "Custom context for Claude",
- *     },
- *   };
+ *   await $`nohup -- say ${message}`;
  * });
+ * ```
+ *
+ * Don't forget to `chmod +x`!
+ *
+ * **Configure in `~/.claude/settings.json`:**
+ *
+ * ```json
+ * {
+ *   "hooks": {
+ *     "PreCompact": [
+ *       {
+ *         "hooks": [
+ *           {
+ *             "type": "command",
+ *             "command": "/path/to/your/script"
+ *           }
+ *         ]
+ *       }
+ *     ]
+ *   }
+ * }
  * ```
  *
  * ## Environment Variables
