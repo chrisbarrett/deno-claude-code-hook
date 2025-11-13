@@ -1,6 +1,6 @@
 # @chrisbarrett/claude-code-hook
 
-[![JSR](https://jsr.io/badges/@chrisbarrett/claude-code-hook)](https://jsr.io/@<scope>/<package>)
+[![JSR](https://jsr.io/badges/@chrisbarrett/claude-code-hook)](https://jsr.io/@chrisbarrett/claude-code-hook)
 
 Type-safe Deno library for building [Claude Code](https://code.claude.com) hooks
 with runtime validation. Using this lib you can write self-contained hook
