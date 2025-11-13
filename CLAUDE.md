@@ -6,9 +6,9 @@ Type-safe Deno library for Claude Code hooks. Published as
 ## Development
 
 ```bash
-# Format and type check
 deno fmt
 deno check
+deno test -P
 ```
 
 **Publishing:** Version in `deno.json` follows Claude Code major version.

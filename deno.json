@@ -22,9 +22,12 @@
     }
   },
   "test": {
-    "include": ["**/*.test.ts"]
-  },
-  "tasks": {
-    "test": "deno test --allow-all"
+    "include": ["**/*.test.ts"],
+    "permissions": {
+      "run": true,
+      "read": true,
+      "env": true,
+      "write": true
+    }
   }
 }
