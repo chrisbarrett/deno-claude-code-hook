@@ -95,6 +95,8 @@ import { claudeEnvFile } from "./env.ts";
  * The result determines whether the tool call is allowed to proceed.
  * stdout is shown in the Ctrl-R transcript.
  *
+ * @see {@link https://code.claude.com/docs/en/hooks#pretooluse | PreToolUse Hook Documentation}
+ *
  * @example Block specific tools
  * ```typescript
  * import { preToolUse } from "jsr:@chrisbarrett/claude-code-hook";
@@ -162,6 +164,8 @@ export const preToolUse: HookDef<
  * The result provides feedback to Claude after tool execution.
  * stdout is shown in the Ctrl-R transcript.
  *
+ * @see {@link https://code.claude.com/docs/en/hooks#posttooluse | PostToolUse Hook Documentation}
+ *
  * @example Check bash command exit codes
  * ```typescript
  * import { postToolUse } from "jsr:@chrisbarrett/claude-code-hook";
@@ -199,17 +203,20 @@ export const postToolUse: HookDef<
   typeof schemas.postToolUseOutput
 > = defineHook(schemas.postToolUseInput, schemas.postToolUseOutput);
 
-/** Runs when Claude Code sends notifications.
-
-    Notifications are sent when:
-
-    1. Claude needs your permission to use a tool. Example: "Claude needs your
-       permission to use Bash"
-
-    2. The prompt input has been idle for at least 60 seconds. "Claude is
-       waiting for your input"
-
-    stdout is only shown when Claude is run with `--debug`.
+/**
+ * Runs when Claude Code sends notifications.
+ *
+ * Notifications are sent when:
+ *
+ * 1. Claude needs your permission to use a tool. Example: "Claude needs your
+ *    permission to use Bash"
+ *
+ * 2. The prompt input has been idle for at least 60 seconds. "Claude is
+ *    waiting for your input"
+ *
+ * stdout is only shown when Claude is run with `--debug`.
+ *
+ * @see {@link https://code.claude.com/docs/en/hooks#notification | Notification Hook Documentation}
  */
 export const notification: HookDef<
   typeof schemas.notificationInput,
@@ -224,6 +231,8 @@ export const notification: HookDef<
  *
  * If blocked, the submitted prompt is erased from the context.
  * stdout is added as context for Claude.
+ *
+ * @see {@link https://code.claude.com/docs/en/hooks#userpromptsubmit | UserPromptSubmit Hook Documentation}
  *
  * @example Add dynamic context based on working directory
  * ```typescript
@@ -274,35 +283,44 @@ export const generic: HookDef<
   typeof schemas.genericOutput
 > = defineHook(schemas.genericInput, schemas.genericOutput);
 
-/** Runs when the main Claude Code agent has finished responding. The output
-    controls whether Claude must continue.
-
-    Does not run if the stoppage occurred due to a user interrupt.
-
-    stdout is shown in the Ctrl-R transcript.
+/**
+ * Runs when the main Claude Code agent has finished responding. The output
+ * controls whether Claude must continue.
+ *
+ * Does not run if the stoppage occurred due to a user interrupt.
+ *
+ * stdout is shown in the Ctrl-R transcript.
+ *
+ * @see {@link https://code.claude.com/docs/en/hooks#stop | Stop Hook Documentation}
  */
 export const stop: HookDef<
   typeof schemas.stopInput,
   typeof schemas.stopOutput
 > = defineHook(schemas.stopInput, schemas.stopOutput);
 
-/** Runs when a Claude Code subagent (Task tool call) has finished responding.
-    The output controls whether Claude must continue.
-
-    It is not documented whether this is run when a user interrupts a subagent.
-
-    stdout is shown in the Ctrl-R transcript.
+/**
+ * Runs when a Claude Code subagent (Task tool call) has finished responding.
+ * The output controls whether Claude must continue.
+ *
+ * It is not documented whether this is run when a user interrupts a subagent.
+ *
+ * stdout is shown in the Ctrl-R transcript.
+ *
+ * @see {@link https://code.claude.com/docs/en/hooks#subagentstop | SubagentStop Hook Documentation}
  */
 export const subagentStop: HookDef<
   typeof schemas.subagentStopInput,
   typeof schemas.subagentStopOutput
 > = defineHook(schemas.subagentStopInput, schemas.subagentStopOutput);
 
-/** Runs before Claude Code is about to run a compact operation.
-
-    Compaction may be initiated by the user via the `/compact` command, or it
-    may be initiated automatically by Claude Code when context limits are
-    reached.
+/**
+ * Runs before Claude Code is about to run a compact operation.
+ *
+ * Compaction may be initiated by the user via the `/compact` command, or it
+ * may be initiated automatically by Claude Code when context limits are
+ * reached.
+ *
+ * @see {@link https://code.claude.com/docs/en/hooks#precompact | PreCompact Hook Documentation}
  */
 export const preCompact: HookDef<
   typeof schemas.preCompactInput,
@@ -319,6 +337,8 @@ export const preCompact: HookDef<
  * file path where you can persist environment variables for subsequent bash commands.
  *
  * stdout is added as context for Claude.
+ *
+ * @see {@link https://code.claude.com/docs/en/hooks#sessionstart | SessionStart Hook Documentation}
  *
  * @example Load git context
  * ```typescript
@@ -452,10 +472,13 @@ export const persistEnvVar = async (
   await Deno.writeFile(file, line, { append: true, create: true });
 };
 
-/** Runs when a Claude Code session ends. Useful for cleanup tasks, logging
-    session statistics, or saving session state.
-
-    stdout is only shown when Claude is run with `--debug`.
+/**
+ * Runs when a Claude Code session ends. Useful for cleanup tasks, logging
+ * session statistics, or saving session state.
+ *
+ * stdout is only shown when Claude is run with `--debug`.
+ *
+ * @see {@link https://code.claude.com/docs/en/hooks#sessionend | SessionEnd Hook Documentation}
  */
 export const sessionEnd: HookDef<
   typeof schemas.sessionEndInput,
