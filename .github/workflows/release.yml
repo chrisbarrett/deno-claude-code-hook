@@ -36,5 +36,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: denoland/setup-deno@v2
-      - run: deno publish --set-version="$TAG"
+      # NOTE: Slow types are par for the course with Zod schemas.
+      - run: deno publish --set-version="$TAG" --allow-slow-types
       - uses: ncipollo/release-action@v1
