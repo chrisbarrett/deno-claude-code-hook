@@ -1,11 +1,24 @@
 {
   "$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
+  "name": "@chrisbarrett/claude-code-hook",
+  "version": "2.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./mod.ts",
+    "./testing": "./testing.ts"
+  },
   "imports": {
+    "@david/dax": "jsr:@david/dax@^0.43.2",
     "@std/assert": "jsr:@std/assert@^1.0.15",
     "@std/bytes": "jsr:@std/bytes@^1.0.6",
     "zod": "jsr:@zod/zod/v4"
   },
   "fmt": {
     "exclude": [".beads/**"]
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-slow-types"]
+    }
   }
 }

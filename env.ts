@@ -1,45 +1,36 @@
 import { assert } from "@std/assert/assert";
 import { z } from "zod";
 
-type GetEnv<T> = {
-  variable: string;
-  schema: z.ZodType<T>;
-  default: T;
-};
+/** Returns max stdin buffer size (default 10 MiB). */
+export const stdinMaxBufLen = (): number => {
+  const dflt = 10 * 1024 * 1024;
 
-const getEnv = <T>(input: GetEnv<T>): T => {
   const { state } = Deno.permissions.querySync({
     name: "env",
-    variable: input.variable,
+    variable: "CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN",
   });
 
   if (state !== "granted") {
-    return input.default;
+    return dflt;
   }
 
-  const value = Deno.env.get(input.variable);
+  const value = Deno.env.get("CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN");
   if (value === undefined) {
-    return input.default;
+    return dflt;
   }
 
-  return input.schema.parse(value);
+  const parsed = z.coerce.number().int().positive().safeParse(value);
+  if (!parsed.success) {
+    console.error(
+      `[WARN] Invalid CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN: "${value}". Using default ${dflt} bytes.`,
+    );
+    return dflt;
+  }
+
+  return parsed.data;
 };
 
-/** Determine the max number of bytes we're allowed to receive from stdin.
-
-    The default is 10 MiB unless overridden via the process env. That's
-    pretty arbitrary, but if your hooks are getting piped that much data by
-    Claude Code then something very sus is happening!
- */
-export const stdinMaxBufLen = (): number => {
-  const dflt = 10 * 1024 * 1024;
-  return getEnv({
-    variable: "CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN",
-    default: dflt,
-    schema: z.coerce.number().int().positive().catch(dflt),
-  });
-};
-
+/** Returns path to CLAUDE_ENV_FILE. Only available in SessionStart hooks. */
 export const claudeEnvFile = () => {
   const value = Deno.env.get("CLAUDE_ENV_FILE");
   assert(value, "CLAUDE_ENV_FILE is only set in `SessionStart` hooks.");
