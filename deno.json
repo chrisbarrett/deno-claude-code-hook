@@ -15,10 +15,14 @@
   "fmt": {
     "exclude": [".beads/**"]
   },
+  "exclude": [".*"],
   "lint": {
     "rules": {
       "exclude": ["no-slow-types"]
     }
+  },
+  "publish": {
+    "exclude": [".*", "flake.*", "**/*.test.ts"]
   },
   "test": {
     "include": ["**/*.test.ts"],
