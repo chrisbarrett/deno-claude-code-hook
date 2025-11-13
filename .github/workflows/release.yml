@@ -5,7 +5,28 @@ on:
       - "v*.*.*"
 
 jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: denoland/setup-deno@v2
+        with:
+          cache: true
+      - run: deno check
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: denoland/setup-deno@v2
+        with:
+          cache: true
+      - run: deno test -P
+
   publish:
+    needs:
+      - test
+      - typecheck
     runs-on: ubuntu-latest
     permissions:
       contents: write
