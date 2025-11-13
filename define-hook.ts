@@ -27,18 +27,24 @@ const readStdin = async (): Promise<string> => {
   return new TextDecoder().decode(concat(chunks)).trim();
 };
 
+type HookFn<Input, Output> = (
+  _: z.output<Input>,
+) => PromiseOrImmediate<void | z.input<Output>>;
+
+export type HookDef<Input, Output> = (
+  fn: HookFn<Input, Output>,
+) => Promise<void>;
+
 /** Define a hook function that reads JSON from stdin, validates with the given
     Zod schema, then delegates to a given implementation function. The
     implementation must return undefined or a JSON payload of the given type;
     which will be validated.
  */
-export const defineHook = <Input extends z.ZodType, Output extends z.ZodType>(
-  inputSchema: Input,
-  outputSchema: Output,
-) =>
-async (
-  fn: (_: z.output<Input>) => PromiseOrImmediate<void | z.input<Output>>,
-): Promise<void> => {
+export const defineHook = <In extends z.ZodType, Out extends z.ZodType>(
+  inputSchema: In,
+  outputSchema: Out,
+): HookDef<In, Out> =>
+async (fn) => {
   const stdin = await readStdin();
 
   let json;
