@@ -54,6 +54,49 @@ const preToolInputs = {
     }),
   }),
 
+  bash: z.object({
+    type: z.literal("Bash"),
+    tool_name: z.literal("Bash"),
+    tool_input: z.object({
+      command: z.string(),
+      description: z.string().optional(),
+      timeout: z.number().optional(),
+      run_in_background: z.boolean().optional(),
+      dangerouslyDisableSandbox: z.boolean().optional(),
+    }),
+  }),
+
+  grep: z.object({
+    type: z.literal("Grep"),
+    tool_name: z.literal("Grep"),
+    tool_input: z.object({
+      pattern: z.string(),
+      path: z.string().optional(),
+      output_mode: z.enum(["content", "files_with_matches", "count"]).optional(),
+      glob: z.string().optional(),
+      type: z.string().optional(),
+      "-i": z.boolean().optional(),
+      "-n": z.boolean().optional(),
+      "-A": z.number().optional(),
+      "-B": z.number().optional(),
+      "-C": z.number().optional(),
+      multiline: z.boolean().optional(),
+      head_limit: z.number().optional(),
+    }),
+  }),
+
+  task: z.object({
+    type: z.literal("Task"),
+    tool_name: z.literal("Task"),
+    tool_input: z.object({
+      description: z.string(),
+      prompt: z.string(),
+      subagent_type: z.string(),
+      model: z.enum(["sonnet", "opus", "haiku"]).optional(),
+      resume: z.string().optional(),
+    }),
+  }),
+
   /** Fallback for unknown tools in PreToolUse */
   unknown: z.object({
     type: z.literal("Other"),
@@ -92,7 +135,7 @@ export const preTool = z.preprocess(
     }
 
     // Map known tool names to their types, fallback to "Other"
-    const knownTools = ["Read", "Write", "Edit", "Glob", "NotebookEdit"];
+    const knownTools = ["Read", "Write", "Edit", "Glob", "NotebookEdit", "Bash", "Grep", "Task"];
     it.type = knownTools.includes(it.tool_name) ? it.tool_name : "Other";
     return it;
   },
@@ -102,6 +145,9 @@ export const preTool = z.preprocess(
     preToolInputs.edit,
     preToolInputs.glob,
     preToolInputs.notebookEdit,
+    preToolInputs.bash,
+    preToolInputs.grep,
+    preToolInputs.task,
     preToolInputs.unknown,
   ]),
 );
@@ -168,6 +214,62 @@ const postToolInputs = {
     tool_response: z.record(z.string(), z.unknown()),
   }),
 
+  bash: z.object({
+    type: z.literal("Bash"),
+    tool_name: z.literal("Bash"),
+    tool_input: z.object({
+      command: z.string(),
+      description: z.string().optional(),
+      timeout: z.number().optional(),
+      run_in_background: z.boolean().optional(),
+      dangerouslyDisableSandbox: z.boolean().optional(),
+    }),
+    tool_response: z.object({
+      exit_code: z.number(),
+      stdout: z.string(),
+      stderr: z.string(),
+    }),
+  }),
+
+  grep: z.object({
+    type: z.literal("Grep"),
+    tool_name: z.literal("Grep"),
+    tool_input: z.object({
+      pattern: z.string(),
+      path: z.string().optional(),
+      output_mode: z.enum(["content", "files_with_matches", "count"]).optional(),
+      glob: z.string().optional(),
+      type: z.string().optional(),
+      "-i": z.boolean().optional(),
+      "-n": z.boolean().optional(),
+      "-A": z.number().optional(),
+      "-B": z.number().optional(),
+      "-C": z.number().optional(),
+      multiline: z.boolean().optional(),
+      head_limit: z.number().optional(),
+    }),
+    tool_response: z.union([
+      z.object({ files: z.array(z.string()) }),
+      z.object({ content: z.string() }),
+      z.record(z.string(), z.unknown()),
+    ]),
+  }),
+
+  task: z.object({
+    type: z.literal("Task"),
+    tool_name: z.literal("Task"),
+    tool_input: z.object({
+      description: z.string(),
+      prompt: z.string(),
+      subagent_type: z.string(),
+      model: z.enum(["sonnet", "opus", "haiku"]).optional(),
+      resume: z.string().optional(),
+    }),
+    tool_response: z.object({
+      result: z.string(),
+    }),
+  }),
+
   /** Fallback for unknown tools in PostToolUse */
   unknown: z.object({
     type: z.literal("Other"),
@@ -203,7 +305,7 @@ export const postTool = z.preprocess(
     }
 
     // Map known tool names to their types, fallback to "Other"
-    const knownTools = ["Read", "Write", "Edit", "Glob", "NotebookEdit"];
+    const knownTools = ["Read", "Write", "Edit", "Glob", "NotebookEdit", "Bash", "Grep", "Task"];
     it.type = knownTools.includes(it.tool_name) ? it.tool_name : "Other";
     return it;
   },
@@ -213,6 +315,9 @@ export const postTool = z.preprocess(
     postToolInputs.edit,
     postToolInputs.glob,
     postToolInputs.notebookEdit,
+    postToolInputs.bash,
+    postToolInputs.grep,
+    postToolInputs.task,
     postToolInputs.unknown,
   ]),
 );
