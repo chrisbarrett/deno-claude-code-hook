@@ -32,10 +32,10 @@ jobs:
       contents: write
       id-token: write
     env:
-      TAG: ${{ github.ref_name }}
+      VERSION: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v5
       - uses: denoland/setup-deno@v2
       # NOTE: Slow types are par for the course with Zod schemas.
-      - run: deno publish --set-version="$TAG" --allow-slow-types
+      - run: deno publish --set-version="${VERSION#v}" --allow-slow-types
       - uses: ncipollo/release-action@v1
