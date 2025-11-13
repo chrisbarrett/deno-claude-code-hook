@@ -13,7 +13,10 @@
       perSystem = { pkgs, ... }: {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
+            actionlint
             deno
+            pre-commit
+            shellcheck
           ];
         };
       };

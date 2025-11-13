@@ -1,0 +1,22 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.8
+    hooks:
+      - id: actionlint-system
+        repo: rhysd/actionlint
+
+  - repo: local
+    hooks:
+      - name: deno fmt
+        id: deno-fmt
+        entry: deno fmt
+        types_or: [ts, json, markdown]
+        language: system
+
+      - name: deno lint
+        id: deno-fmt
+        entry: deno lint
+        types_or: [ts]
+        language: system
