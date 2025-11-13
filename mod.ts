@@ -62,7 +62,7 @@
  */
 import { z } from "zod";
 import * as schemas from "./schemas/hooks.ts";
-import { defineHook } from "./define-hook.ts";
+import { defineHook, type HookDef } from "./define-hook.ts";
 import { claudeEnvFile } from "./env.ts";
 
 /**
@@ -127,10 +127,10 @@ import { claudeEnvFile } from "./env.ts";
  * });
  * ```
  */
-export const preToolUse = defineHook(
-  schemas.preToolUseInput,
-  schemas.preToolUseOutput,
-);
+export const preToolUse: HookDef<
+  typeof schemas.preToolUseInput,
+  typeof schemas.preToolUseOutput
+> = defineHook(schemas.preToolUseInput, schemas.preToolUseOutput);
 
 /**
  * Runs immediately after a tool completes successfully.
@@ -170,10 +170,10 @@ export const preToolUse = defineHook(
  * });
  * ```
  */
-export const postToolUse = defineHook(
-  schemas.postToolUseInput,
-  schemas.postToolUseOutput,
-);
+export const postToolUse: HookDef<
+  typeof schemas.postToolUseInput,
+  typeof schemas.postToolUseOutput
+> = defineHook(schemas.postToolUseInput, schemas.postToolUseOutput);
 
 /** Runs when Claude Code sends notifications.
 
@@ -187,10 +187,10 @@ export const postToolUse = defineHook(
 
     stdout is only shown when Claude is run with `--debug`.
  */
-export const notification = defineHook(
-  schemas.notificationInput,
-  schemas.notificationOutput,
-);
+export const notification: HookDef<
+  typeof schemas.notificationInput,
+  typeof schemas.notificationOutput
+> = defineHook(schemas.notificationInput, schemas.notificationOutput);
 
 /**
  * Runs when the user submits a prompt, before Claude processes it.
@@ -238,14 +238,17 @@ export const notification = defineHook(
  * });
  * ```
  */
-export const userPromptSubmit = defineHook(
-  schemas.userPromptSubmitInput,
-  schemas.userPromptSubmitOutput,
-);
+export const userPromptSubmit: HookDef<
+  typeof schemas.userPromptSubmitInput,
+  typeof schemas.userPromptSubmitOutput
+> = defineHook(schemas.userPromptSubmitInput, schemas.userPromptSubmitOutput);
 
 /** A general-purpose hook that can be used for any event.
  */
-export const generic = defineHook(schemas.genericInput, schemas.genericOutput);
+export const generic: HookDef<
+  typeof schemas.genericInput,
+  typeof schemas.genericOutput
+> = defineHook(schemas.genericInput, schemas.genericOutput);
 
 /** Runs when the main Claude Code agent has finished responding. The output
     controls whether Claude must continue.
@@ -254,7 +257,10 @@ export const generic = defineHook(schemas.genericInput, schemas.genericOutput);
 
     stdout is shown in the Ctrl-R transcript.
  */
-export const stop = defineHook(schemas.stopInput, schemas.stopOutput);
+export const stop: HookDef<
+  typeof schemas.stopInput,
+  typeof schemas.stopOutput
+> = defineHook(schemas.stopInput, schemas.stopOutput);
 
 /** Runs when a Claude Code subagent (Task tool call) has finished responding.
     The output controls whether Claude must continue.
@@ -263,10 +269,10 @@ export const stop = defineHook(schemas.stopInput, schemas.stopOutput);
 
     stdout is shown in the Ctrl-R transcript.
  */
-export const subagentStop = defineHook(
-  schemas.subagentStopInput,
-  schemas.subagentStopOutput,
-);
+export const subagentStop: HookDef<
+  typeof schemas.subagentStopInput,
+  typeof schemas.subagentStopOutput
+> = defineHook(schemas.subagentStopInput, schemas.subagentStopOutput);
 
 /** Runs before Claude Code is about to run a compact operation.
 
@@ -274,10 +280,10 @@ export const subagentStop = defineHook(
     may be initiated automatically by Claude Code when context limits are
     reached.
  */
-export const preCompact = defineHook(
-  schemas.preCompactInput,
-  schemas.preCompactOutput,
-);
+export const preCompact: HookDef<
+  typeof schemas.preCompactInput,
+  typeof schemas.preCompactOutput
+> = defineHook(schemas.preCompactInput, schemas.preCompactOutput);
 
 /**
  * Runs when Claude Code starts a new session or resumes an existing session.
@@ -349,10 +355,10 @@ export const preCompact = defineHook(
  * });
  * ```
  */
-export const sessionStart = defineHook(
-  schemas.sessionStartInput,
-  schemas.sessionStartOutput,
-);
+export const sessionStart: HookDef<
+  typeof schemas.sessionStartInput,
+  typeof schemas.sessionStartOutput
+> = defineHook(schemas.sessionStartInput, schemas.sessionStartOutput);
 
 /**
  * Persist an environment variable to {@link CLAUDE_ENV_FILE}.
@@ -427,7 +433,7 @@ export const persistEnvVar = async (
 
     stdout is only shown when Claude is run with `--debug`.
  */
-export const sessionEnd = defineHook(
-  schemas.sessionEndInput,
-  schemas.sessionEndOutput,
-);
+export const sessionEnd: HookDef<
+  typeof schemas.sessionEndInput,
+  typeof schemas.sessionEndOutput
+> = defineHook(schemas.sessionEndInput, schemas.sessionEndOutput);

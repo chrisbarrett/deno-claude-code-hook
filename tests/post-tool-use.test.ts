@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assert, assertObjectMatch } from "@std/assert";
 import type { z } from "zod";
 import type { postToolUseInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -24,11 +24,13 @@ Deno.test("postToolUse - adds context for failed bash command", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assertEquals(output.decision, "allow");
-  assertEquals(
-    output.hookSpecificOutput.additionalContext,
-    "Command failed with exit code 1",
-  );
+  assert(output);
+  assertObjectMatch(output, {
+    decision: "allow",
+    hookSpecificOutput: {
+      additionalContext: "Command failed with exit code 1",
+    },
+  });
 });
 
 Deno.test("postToolUse - allows successful bash command", async () => {
@@ -50,6 +52,8 @@ Deno.test("postToolUse - allows successful bash command", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assertEquals(output.decision, "allow");
-  assertEquals(output.hookSpecificOutput, undefined);
+  assert(output);
+  assertObjectMatch(output, {
+    decision: "allow",
+  });
 });

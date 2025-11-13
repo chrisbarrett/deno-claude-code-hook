@@ -10,15 +10,19 @@
     "@david/dax": "jsr:@david/dax@^0.43.2",
     "@std/assert": "jsr:@std/assert@^1.0.15",
     "@std/bytes": "jsr:@std/bytes@^1.0.6",
-    "zod": "jsr:@zod/zod/v4"
+    "zod": "jsr:@zod/zod@^4.1.12/v4"
   },
   "fmt": {
     "exclude": [".beads/**"]
   },
+  "exclude": [".*"],
   "lint": {
     "rules": {
       "exclude": ["no-slow-types"]
     }
+  },
+  "publish": {
+    "exclude": [".*", "flake.*", "**/*.test.ts"]
   },
   "test": {
     "include": ["**/*.test.ts"],
