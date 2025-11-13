@@ -5,6 +5,8 @@
  */
 
 import $ from "@david/dax";
+import type { genericInput, genericOutput } from "./schemas/hooks.ts";
+import type { z } from "zod";
 
 /**
  * Execute a hook script with JSON input via stdin and return parsed JSON output.
@@ -16,15 +18,18 @@ import $ from "@david/dax";
  * @param input - Input object to serialize as JSON and pipe to stdin
  * @returns Parsed JSON output from stdout, or undefined if no output
  */
-export const testHook = async (
+export const testHook = async <In extends z.input<typeof genericInput>>(
   hookPath: string,
-  input: unknown,
-): Promise<object | undefined> => {
+  input: In,
+): Promise<z.output<typeof genericOutput> | undefined> => {
   const result = await $`deno run --allow-all ${hookPath}`
     .stdinText(JSON.stringify(input))
     .text();
 
-  return result.trim() ? JSON.parse(result) : undefined;
+  if (result.trim().length === 0) {
+    return;
+  }
+  return JSON.parse(result);
 };
 
 /**

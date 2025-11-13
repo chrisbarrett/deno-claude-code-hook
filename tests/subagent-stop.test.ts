@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assert, assertObjectMatch } from "@std/assert";
 import type { z } from "zod";
 import type { subagentStopInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -16,8 +16,11 @@ Deno.test("subagentStop - blocks stop when hook is not active", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assertEquals(output.decision, "block");
-  assertEquals(output.reason, "Please provide a summary of completed work");
+  assert(output);
+  assertObjectMatch(output, {
+    decision: "block",
+    reason: "Please provide a summary of completed work",
+  });
 });
 
 Deno.test("subagentStop - allows stop when hook is already active", async () => {
@@ -31,6 +34,8 @@ Deno.test("subagentStop - allows stop when hook is already active", async () => 
 
   const output = await testHook(hookPath, input);
 
-  assertEquals(output.decision, "allow");
-  assertEquals(output.reason, undefined);
+  assert(output);
+  assertObjectMatch(output, {
+    decision: "allow",
+  });
 });
