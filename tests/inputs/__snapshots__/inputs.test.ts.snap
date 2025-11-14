@@ -1,0 +1,80 @@
+export const snapshot = {};
+
+snapshot[`parse PostToolUse.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PostToolUse",
+  permission_mode: "acceptEdits",
+  session_id: "test-session-id",
+  tool_input: {
+    command: "pwd && ls -1",
+    description: "Show current directory and list files",
+  },
+  tool_name: "Bash",
+  tool_response: {
+    interrupted: false,
+    isImage: false,
+    stderr: "",
+    stdout: "/test/project",
+  },
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "Bash",
+}
+`;
+
+snapshot[`parse PreToolUse.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PreToolUse",
+  permission_mode: "acceptEdits",
+  session_id: "test-session-id",
+  tool_input: {
+    pattern: "**/",
+  },
+  tool_name: "Glob",
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "Glob",
+}
+`;
+
+snapshot[`parse SessionEnd.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "SessionEnd",
+  reason: "other",
+  session_id: "test-session-id",
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+}
+`;
+
+snapshot[`parse SessionStart.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "SessionStart",
+  session_id: "test-session-id",
+  source: "startup",
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+}
+`;
+
+snapshot[`parse Stop.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "Stop",
+  permission_mode: "acceptEdits",
+  session_id: "test-session-id",
+  stop_hook_active: false,
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+}
+`;
+
+snapshot[`parse UserPromptSubmit.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "UserPromptSubmit",
+  permission_mode: "acceptEdits",
+  prompt: "What is 2+2?",
+  session_id: "test-session-id",
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+}
+`;
