@@ -81,7 +81,6 @@ const preToolInputs = {
       description: z.string().optional(),
       timeout: uint.optional(),
       run_in_background: z.boolean().optional(),
-      dangerouslyDisableSandbox: z.boolean().optional(),
     }),
   }),
 
@@ -330,7 +329,6 @@ const postToolInputs = {
       description: z.string().optional(),
       timeout: uint.optional(),
       run_in_background: z.boolean().optional(),
-      dangerouslyDisableSandbox: z.boolean().optional(),
     }),
     tool_response: z.object({
       stdout: z.string(),
@@ -358,7 +356,11 @@ const postToolInputs = {
       head_limit: uint.optional(),
     }),
     tool_response: z.union([
-      z.object({ files: z.array(z.string()) }),
+      z.object({
+        mode: z.string(),
+        filenames: z.array(z.string()),
+        numFiles: uint,
+      }),
       z.object({ content: z.string() }),
       z.record(z.string(), z.unknown()),
     ]),
