@@ -121,3 +121,35 @@ Deno.test("postToolUse - handles real Read payload format", async () => {
     decision: "allow",
   });
 });
+
+Deno.test("postToolUse - handles real Glob payload format", async () => {
+  // Real payload from Claude Code for Glob tool
+  const input: z.input<typeof postToolUseInput> = {
+    hook_event_name: "PostToolUse",
+    session_id: "test-session",
+    transcript_path: "/tmp/transcript.json",
+    cwd: "/tmp/project",
+    permission_mode: "acceptEdits",
+    tool_name: "Glob",
+    tool_input: {
+      pattern: "src/**/*.ts",
+    },
+    tool_response: {
+      filenames: [
+        "/tmp/project/src/main.ts",
+        "/tmp/project/src/utils/helper.ts",
+        "/tmp/project/src/types/index.ts",
+      ],
+      durationMs: 15,
+      numFiles: 3,
+      truncated: false,
+    },
+  };
+
+  const output = await testHook(hookPath, input);
+
+  assert(output);
+  assertObjectMatch(output, {
+    decision: "allow",
+  });
+});

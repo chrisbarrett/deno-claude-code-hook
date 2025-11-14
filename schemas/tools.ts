@@ -215,7 +215,10 @@ const postToolInputs = {
       path: z.string().optional(),
     }),
     tool_response: z.object({
-      files: z.array(z.string()),
+      filenames: z.array(z.string()),
+      durationMs: z.number().int().nonnegative(),
+      numFiles: z.number().int().nonnegative(),
+      truncated: z.boolean(),
     }),
   }),
 
