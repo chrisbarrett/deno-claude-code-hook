@@ -11,6 +11,7 @@ Deno.test("preToolUse - blocks Write tool", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     tool_name: "Write",
     tool_input: {
       file_path: "/tmp/test.txt",
@@ -35,6 +36,7 @@ Deno.test("preToolUse - allows Read tool", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     tool_name: "Read",
     tool_input: {
       file_path: "/tmp/test.txt",

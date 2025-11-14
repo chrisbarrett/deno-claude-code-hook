@@ -17,6 +17,7 @@ Deno.test("userPromptSubmit - blocks dangerous prompts", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     prompt: "Delete production database",
   };
 
@@ -35,6 +36,7 @@ Deno.test("userPromptSubmit - adds context for test prompts", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     prompt: "Help me write a test for the login function",
   };
 
@@ -56,6 +58,7 @@ Deno.test("userPromptSubmit - allows normal prompts", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     prompt: "Refactor this code",
   };
 

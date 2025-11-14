@@ -11,6 +11,7 @@ Deno.test("postToolUse - adds context for interrupted bash command", async () =>
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     tool_name: "Bash",
     tool_input: {
       command: "sleep 100",
@@ -40,6 +41,7 @@ Deno.test("postToolUse - allows successful bash command", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     tool_name: "Bash",
     tool_input: {
       command: "echo hello",

@@ -11,6 +11,7 @@ Deno.test("stop - blocks stop when hook is not active", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     stop_hook_active: false,
   };
 
@@ -29,6 +30,7 @@ Deno.test("stop - allows stop when hook is already active", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     stop_hook_active: true,
   };
 
