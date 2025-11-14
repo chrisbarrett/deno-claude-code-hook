@@ -8,8 +8,8 @@ const preToolInputs = {
     tool_name: z.literal("Read"),
     tool_input: z.object({
       file_path: z.string(),
-      offset: z.number().optional(),
-      limit: z.number().optional(),
+      offset: z.number().int().nonnegative().optional(),
+      limit: z.number().int().nonnegative().optional(),
     }),
   }),
 
@@ -60,7 +60,7 @@ const preToolInputs = {
     tool_input: z.object({
       command: z.string(),
       description: z.string().optional(),
-      timeout: z.number().optional(),
+      timeout: z.number().int().nonnegative().optional(),
       run_in_background: z.boolean().optional(),
       dangerouslyDisableSandbox: z.boolean().optional(),
     }),
@@ -72,17 +72,18 @@ const preToolInputs = {
     tool_input: z.object({
       pattern: z.string(),
       path: z.string().optional(),
-      output_mode: z.enum(["content", "files_with_matches", "count"])
+      output_mode: z
+        .enum(["content", "files_with_matches", "count"])
         .optional(),
       glob: z.string().optional(),
       type: z.string().optional(),
       "-i": z.boolean().optional(),
       "-n": z.boolean().optional(),
-      "-A": z.number().optional(),
-      "-B": z.number().optional(),
-      "-C": z.number().optional(),
+      "-A": z.number().int().nonnegative().optional(),
+      "-B": z.number().int().nonnegative().optional(),
+      "-C": z.number().int().nonnegative().optional(),
       multiline: z.boolean().optional(),
-      head_limit: z.number().optional(),
+      head_limit: z.number().int().nonnegative().optional(),
     }),
   }),
 
@@ -169,11 +170,18 @@ const postToolInputs = {
     tool_name: z.literal("Read"),
     tool_input: z.object({
       file_path: z.string(),
-      offset: z.number().optional(),
-      limit: z.number().optional(),
+      offset: z.number().int().nonnegative().optional(),
+      limit: z.number().int().nonnegative().optional(),
     }),
     tool_response: z.object({
-      content: z.string(),
+      type: z.literal("text"),
+      file: z.object({
+        filePath: z.string(),
+        content: z.string(),
+        numLines: z.number().int().nonnegative(),
+        startLine: z.number().int().nonnegative(),
+        totalLines: z.number().int().nonnegative(),
+      }),
     }),
   }),
 
@@ -230,7 +238,7 @@ const postToolInputs = {
     tool_input: z.object({
       command: z.string(),
       description: z.string().optional(),
-      timeout: z.number().optional(),
+      timeout: z.number().int().nonnegative().optional(),
       run_in_background: z.boolean().optional(),
       dangerouslyDisableSandbox: z.boolean().optional(),
     }),
@@ -248,17 +256,18 @@ const postToolInputs = {
     tool_input: z.object({
       pattern: z.string(),
       path: z.string().optional(),
-      output_mode: z.enum(["content", "files_with_matches", "count"])
+      output_mode: z
+        .enum(["content", "files_with_matches", "count"])
         .optional(),
       glob: z.string().optional(),
       type: z.string().optional(),
       "-i": z.boolean().optional(),
       "-n": z.boolean().optional(),
-      "-A": z.number().optional(),
-      "-B": z.number().optional(),
-      "-C": z.number().optional(),
+      "-A": z.number().int().nonnegative().optional(),
+      "-B": z.number().int().nonnegative().optional(),
+      "-C": z.number().int().nonnegative().optional(),
       multiline: z.boolean().optional(),
-      head_limit: z.number().optional(),
+      head_limit: z.number().int().nonnegative().optional(),
     }),
     tool_response: z.union([
       z.object({ files: z.array(z.string()) }),

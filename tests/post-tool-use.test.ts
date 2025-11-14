@@ -60,7 +60,7 @@ Deno.test("postToolUse - allows successful bash command", async () => {
   });
 });
 
-Deno.test("postToolUse - handles real payload format", async () => {
+Deno.test("postToolUse - handles real Bash payload format", async () => {
   // Real payload from Claude Code with interrupted and isImage fields
   const input: z.input<typeof postToolUseInput> = {
     hook_event_name: "PostToolUse",
@@ -79,6 +79,38 @@ Deno.test("postToolUse - handles real payload format", async () => {
       stderr: "",
       interrupted: false,
       isImage: false,
+    },
+  };
+
+  const output = await testHook(hookPath, input);
+
+  assert(output);
+  assertObjectMatch(output, {
+    decision: "allow",
+  });
+});
+
+Deno.test("postToolUse - handles real Read payload format", async () => {
+  // Real payload from Claude Code for Read tool
+  const input: z.input<typeof postToolUseInput> = {
+    hook_event_name: "PostToolUse",
+    session_id: "test-session",
+    transcript_path: "/tmp/transcript.json",
+    cwd: "/tmp",
+    permission_mode: "acceptEdits",
+    tool_name: "Read",
+    tool_input: {
+      file_path: "/tmp/test.txt",
+    },
+    tool_response: {
+      type: "text",
+      file: {
+        filePath: "/tmp/test.txt",
+        content: "file contents here",
+        numLines: 156,
+        startLine: 1,
+        totalLines: 156,
+      },
     },
   };
 
