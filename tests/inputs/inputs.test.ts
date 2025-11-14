@@ -29,22 +29,19 @@ async function testHookInput<T extends z.ZodTypeAny>(
 
   const result = schema.parse(json) as { hook_event_name: string };
 
+  // For tool-specific files like "PreToolUse.Read", extract base hook name
+  const baseHookName = filename.split(".")[0];
+
   assertEquals(
     result.hook_event_name,
-    filename,
+    baseHookName,
     `hook_event_name mismatch in ${filename}.json`,
   );
 
   await assertSnapshot(t, result);
 }
 
-Deno.test("parse PostToolUse.json", async (t) => {
-  await testHookInput(t, "PostToolUse", schemas.postToolUseInput);
-});
-
-Deno.test("parse PreToolUse.json", async (t) => {
-  await testHookInput(t, "PreToolUse", schemas.preToolUseInput);
-});
+// Generic PreToolUse/PostToolUse tests removed - now testing tool-specific variants
 
 Deno.test("parse SessionEnd.json", async (t) => {
   await testHookInput(t, "SessionEnd", schemas.sessionEndInput);
@@ -60,4 +57,70 @@ Deno.test("parse Stop.json", async (t) => {
 
 Deno.test("parse UserPromptSubmit.json", async (t) => {
   await testHookInput(t, "UserPromptSubmit", schemas.userPromptSubmitInput);
+});
+
+// Tool-specific PreToolUse tests
+Deno.test("parse PreToolUse.Read.json", async (t) => {
+  await testHookInput(t, "PreToolUse.Read", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.Write.json", async (t) => {
+  await testHookInput(t, "PreToolUse.Write", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.Edit.json", async (t) => {
+  await testHookInput(t, "PreToolUse.Edit", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.Glob.json", async (t) => {
+  await testHookInput(t, "PreToolUse.Glob", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.Bash.json", async (t) => {
+  await testHookInput(t, "PreToolUse.Bash", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.Grep.json", async (t) => {
+  await testHookInput(t, "PreToolUse.Grep", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.Task.json", async (t) => {
+  await testHookInput(t, "PreToolUse.Task", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.NotebookEdit.json", async (t) => {
+  await testHookInput(t, "PreToolUse.NotebookEdit", schemas.preToolUseInput);
+});
+
+// Tool-specific PostToolUse tests
+Deno.test("parse PostToolUse.Read.json", async (t) => {
+  await testHookInput(t, "PostToolUse.Read", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.Write.json", async (t) => {
+  await testHookInput(t, "PostToolUse.Write", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.Edit.json", async (t) => {
+  await testHookInput(t, "PostToolUse.Edit", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.Glob.json", async (t) => {
+  await testHookInput(t, "PostToolUse.Glob", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.Bash.json", async (t) => {
+  await testHookInput(t, "PostToolUse.Bash", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.Grep.json", async (t) => {
+  await testHookInput(t, "PostToolUse.Grep", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.Task.json", async (t) => {
+  await testHookInput(t, "PostToolUse.Task", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.NotebookEdit.json", async (t) => {
+  await testHookInput(t, "PostToolUse.NotebookEdit", schemas.postToolUseInput);
 });

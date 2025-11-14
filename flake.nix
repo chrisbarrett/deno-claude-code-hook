@@ -15,6 +15,8 @@
           buildInputs = with pkgs; [
             actionlint
             deno
+            jq
+            moreutils
             pre-commit
             shellcheck
           ];

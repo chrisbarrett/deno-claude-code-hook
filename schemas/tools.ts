@@ -290,7 +290,17 @@ const postToolInputs = {
       resume: z.string().optional(),
     }),
     tool_response: z.object({
-      result: z.string(),
+      status: z.string(),
+      prompt: z.string(),
+      agentId: z.string(),
+      content: z.array(z.object({
+        type: z.string(),
+        text: z.string(),
+      })),
+      totalDurationMs: z.number().int().nonnegative(),
+      totalTokens: z.number().int().nonnegative(),
+      totalToolUseCount: z.number().int().nonnegative(),
+      usage: z.record(z.string(), z.unknown()),
     }),
   }),
 

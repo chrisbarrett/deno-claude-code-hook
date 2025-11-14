@@ -1,0 +1,12 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "pwd",
+    "description": "Print working directory"
+  }
+}

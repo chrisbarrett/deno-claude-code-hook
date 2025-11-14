@@ -2,12 +2,12 @@
   "session_id": "test-session-id",
   "transcript_path": "/test/project/.claude/transcripts/test-session.json",
   "cwd": "/test/project",
-  "permission_mode": "acceptEdits",
+  "permission_mode": "bypassPermissions",
   "hook_event_name": "PostToolUse",
   "tool_name": "Bash",
   "tool_input": {
-    "command": "pwd && ls -1",
-    "description": "Show current directory and list files"
+    "command": "pwd",
+    "description": "Print working directory"
   },
   "tool_response": {
     "stdout": "/test/project",

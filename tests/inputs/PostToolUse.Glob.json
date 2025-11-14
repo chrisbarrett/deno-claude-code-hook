@@ -1,0 +1,44 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Glob",
+  "tool_input": {
+    "pattern": "**/*.ts"
+  },
+  "tool_response": {
+    "filenames": [
+      "/test/project/env.ts",
+      "/test/project/tests/pre-compact.test.ts",
+      "/test/project/tests/notification.test.ts",
+      "/test/project/tests/session-end.test.ts",
+      "/test/project/tests/hooks/pre-tool-use.ts",
+      "/test/project/tests/hooks/session-start.ts",
+      "/test/project/tests/hooks/stop.ts",
+      "/test/project/tests/hooks/session-end.ts",
+      "/test/project/tests/hooks/user-prompt-submit.ts",
+      "/test/project/tests/hooks/subagent-stop.ts",
+      "/test/project/tests/hooks/notification.ts",
+      "/test/project/tests/hooks/pre-compact.ts",
+      "/test/project/mod.test.ts",
+      "/test/project/define-hook.ts",
+      "/test/project/testing.ts",
+      "/test/project/tests/session-start.test.ts",
+      "/test/project/tests/subagent-stop.test.ts",
+      "/test/project/mod.ts",
+      "/test/project/tests/hooks/post-tool-use.ts",
+      "/test/project/tests/stop.test.ts",
+      "/test/project/tests/user-prompt-submit.test.ts",
+      "/test/project/tests/post-tool-use.test.ts",
+      "/test/project/tests/pre-tool-use.test.ts",
+      "/test/project/schemas/hooks.ts",
+      "/test/project/schemas/tools.ts",
+      "/test/project/tests/inputs/inputs.test.ts"
+    ],
+    "durationMs": 11,
+    "numFiles": 26,
+    "truncated": false
+  }
+}

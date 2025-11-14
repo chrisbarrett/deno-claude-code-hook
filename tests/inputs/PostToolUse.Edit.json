@@ -1,0 +1,33 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Edit",
+  "tool_input": {
+    "file_path": "/tmp/test-edit-target.json",
+    "old_string": "\"hello\"",
+    "new_string": "\"world\""
+  },
+  "tool_response": {
+    "filePath": "/tmp/test-edit-target.json",
+    "oldString": "\"hello\"",
+    "newString": "\"world\"",
+    "originalFile": "{\"greeting\": \"hello\"}\n",
+    "structuredPatch": [
+      {
+        "oldStart": 1,
+        "oldLines": 1,
+        "newStart": 1,
+        "newLines": 1,
+        "lines": [
+          "-{\"greeting\": \"hello\"}",
+          "+{\"greeting\": \"world\"}"
+        ]
+      }
+    ],
+    "userModified": false,
+    "replaceAll": false
+  }
+}
