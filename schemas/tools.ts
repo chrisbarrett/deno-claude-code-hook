@@ -235,9 +235,10 @@ const postToolInputs = {
       dangerouslyDisableSandbox: z.boolean().optional(),
     }),
     tool_response: z.object({
-      exit_code: z.number(),
       stdout: z.string(),
       stderr: z.string(),
+      interrupted: z.boolean(),
+      isImage: z.boolean(),
     }),
   }),
 

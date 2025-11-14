@@ -3,14 +3,18 @@
 import { postToolUse } from "../../mod.ts";
 
 postToolUse((input) => {
-  // Check for failed bash commands
-  if (input.tool_name === "Bash" && input.tool_response.exit_code !== 0) {
+  // Log file modifications
+  if (input.tool_name === "Write" || input.tool_name === "Edit") {
+    console.log(`Modified: ${input.tool_input.file_path}`);
+  }
+
+  // Check if bash command was interrupted
+  if (input.tool_name === "Bash" && input.tool_response.interrupted) {
     return {
       decision: "allow",
       hookSpecificOutput: {
         hookEventName: "PostToolUse",
-        additionalContext:
-          `Command failed with exit code ${input.tool_response.exit_code}`,
+        additionalContext: "Command was interrupted",
       },
     };
   }

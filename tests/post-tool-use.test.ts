@@ -5,7 +5,7 @@ import { resolveHookPath, testHook } from "../testing.ts";
 
 const hookPath = resolveHookPath(import.meta.url, "./hooks/post-tool-use.ts");
 
-Deno.test("postToolUse - adds context for failed bash command", async () => {
+Deno.test("postToolUse - adds context for interrupted bash command", async () => {
   const input: z.input<typeof postToolUseInput> = {
     hook_event_name: "PostToolUse",
     session_id: "test-session",
@@ -13,12 +13,13 @@ Deno.test("postToolUse - adds context for failed bash command", async () => {
     cwd: "/tmp",
     tool_name: "Bash",
     tool_input: {
-      command: "exit 1",
+      command: "sleep 100",
     },
     tool_response: {
-      exit_code: 1,
       stdout: "",
       stderr: "",
+      interrupted: true,
+      isImage: false,
     },
   };
 
@@ -28,7 +29,7 @@ Deno.test("postToolUse - adds context for failed bash command", async () => {
   assertObjectMatch(output, {
     decision: "allow",
     hookSpecificOutput: {
-      additionalContext: "Command failed with exit code 1",
+      additionalContext: "Command was interrupted",
     },
   });
 });
@@ -44,9 +45,40 @@ Deno.test("postToolUse - allows successful bash command", async () => {
       command: "echo hello",
     },
     tool_response: {
-      exit_code: 0,
       stdout: "hello\n",
       stderr: "",
+      interrupted: false,
+      isImage: false,
+    },
+  };
+
+  const output = await testHook(hookPath, input);
+
+  assert(output);
+  assertObjectMatch(output, {
+    decision: "allow",
+  });
+});
+
+Deno.test("postToolUse - handles real payload format", async () => {
+  // Real payload from Claude Code with interrupted and isImage fields
+  const input: z.input<typeof postToolUseInput> = {
+    hook_event_name: "PostToolUse",
+    session_id: "2bbf6c7c-9e83-438d-acc6-ff8d7813beaf",
+    transcript_path:
+      "/Users/chris/.claude/projects/-Users-chris--config-nix-configuration/2bbf6c7c-9e83-438d-acc6-ff8d7813beaf.jsonl",
+    cwd: "/Users/chris/.config/nix-configuration",
+    permission_mode: "acceptEdits",
+    tool_name: "Bash",
+    tool_input: {
+      command: "ls -la",
+      description: "List files with details",
+    },
+    tool_response: {
+      stdout: "",
+      stderr: "",
+      interrupted: false,
+      isImage: false,
     },
   };
 
