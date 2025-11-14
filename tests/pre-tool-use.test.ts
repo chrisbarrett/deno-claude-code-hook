@@ -1,12 +1,10 @@
 import { expect } from "@std/expect";
-import type { z } from "zod";
-import type { preToolUseInput } from "../schemas/hooks.ts";
-import { resolveHookPath, testHook } from "../testing.ts";
+import { runHook } from "../testing.ts";
 
-const hookPath = resolveHookPath(import.meta.url, "./hooks/pre-tool-use.ts");
+const hookPath = import.meta.resolve("./hooks/pre-tool-use.ts");
 
 Deno.test("preToolUse - blocks Write tool", async () => {
-  const input: z.input<typeof preToolUseInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "PreToolUse",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
@@ -17,9 +15,7 @@ Deno.test("preToolUse - blocks Write tool", async () => {
       file_path: "/tmp/test.txt",
       content: "test content",
     },
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,
@@ -35,7 +31,7 @@ Deno.test("preToolUse - blocks Write tool", async () => {
 });
 
 Deno.test("preToolUse - allows Read tool", async () => {
-  const input: z.input<typeof preToolUseInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "PreToolUse",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
@@ -45,9 +41,7 @@ Deno.test("preToolUse - allows Read tool", async () => {
     tool_input: {
       file_path: "/tmp/test.txt",
     },
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,

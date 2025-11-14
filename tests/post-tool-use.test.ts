@@ -1,12 +1,10 @@
 import { expect } from "@std/expect";
-import type { z } from "zod";
-import type { postToolUseInput } from "../schemas/hooks.ts";
-import { resolveHookPath, testHook } from "../testing.ts";
+import { runHook } from "../testing.ts";
 
-const hookPath = resolveHookPath(import.meta.url, "./hooks/post-tool-use.ts");
+const hookPath = import.meta.resolve("./hooks/post-tool-use.ts");
 
 Deno.test("postToolUse - adds context for interrupted bash command", async () => {
-  const input: z.input<typeof postToolUseInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "PostToolUse",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
@@ -22,9 +20,7 @@ Deno.test("postToolUse - adds context for interrupted bash command", async () =>
       interrupted: true,
       isImage: false,
     },
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,
@@ -40,7 +36,7 @@ Deno.test("postToolUse - adds context for interrupted bash command", async () =>
 });
 
 Deno.test("postToolUse - allows successful bash command", async () => {
-  const input: z.input<typeof postToolUseInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "PostToolUse",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
@@ -56,9 +52,7 @@ Deno.test("postToolUse - allows successful bash command", async () => {
       interrupted: false,
       isImage: false,
     },
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,
@@ -71,7 +65,7 @@ Deno.test("postToolUse - allows successful bash command", async () => {
 
 Deno.test("postToolUse - handles real Bash payload format", async () => {
   // Real payload from Claude Code with interrupted and isImage fields
-  const input: z.input<typeof postToolUseInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "PostToolUse",
     session_id: "2bbf6c7c-9e83-438d-acc6-ff8d7813beaf",
     transcript_path:
@@ -89,9 +83,7 @@ Deno.test("postToolUse - handles real Bash payload format", async () => {
       interrupted: false,
       isImage: false,
     },
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,
@@ -104,7 +96,7 @@ Deno.test("postToolUse - handles real Bash payload format", async () => {
 
 Deno.test("postToolUse - handles real Read payload format", async () => {
   // Real payload from Claude Code for Read tool
-  const input: z.input<typeof postToolUseInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "PostToolUse",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
@@ -124,9 +116,7 @@ Deno.test("postToolUse - handles real Read payload format", async () => {
         totalLines: 156,
       },
     },
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,
@@ -139,7 +129,7 @@ Deno.test("postToolUse - handles real Read payload format", async () => {
 
 Deno.test("postToolUse - handles real Glob payload format", async () => {
   // Real payload from Claude Code for Glob tool
-  const input: z.input<typeof postToolUseInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "PostToolUse",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
@@ -159,9 +149,7 @@ Deno.test("postToolUse - handles real Glob payload format", async () => {
       numFiles: 3,
       truncated: false,
     },
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,

@@ -1,27 +1,17 @@
 import { expect } from "@std/expect";
-import type { z } from "zod";
-import type { userPromptSubmitInput } from "../schemas/hooks.ts";
-import {
-  resolveHookPath,
-  testHook,
-} from "@chrisbarrett/claude-code-hook/testing";
+import { runHook } from "../testing.ts";
 
-const hookPath = resolveHookPath(
-  import.meta.url,
-  "./hooks/user-prompt-submit.ts",
-);
+const hookPath = import.meta.resolve("./hooks/user-prompt-submit.ts");
 
 Deno.test("userPromptSubmit - blocks dangerous prompts", async () => {
-  const input: z.input<typeof userPromptSubmitInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "UserPromptSubmit",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
     permission_mode: "acceptEdits",
     prompt: "Delete production database",
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,
@@ -34,16 +24,14 @@ Deno.test("userPromptSubmit - blocks dangerous prompts", async () => {
 });
 
 Deno.test("userPromptSubmit - adds context for test prompts", async () => {
-  const input: z.input<typeof userPromptSubmitInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "UserPromptSubmit",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
     permission_mode: "acceptEdits",
     prompt: "Help me write a test for the login function",
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,
@@ -60,16 +48,14 @@ Deno.test("userPromptSubmit - adds context for test prompts", async () => {
 });
 
 Deno.test("userPromptSubmit - allows normal prompts", async () => {
-  const input: z.input<typeof userPromptSubmitInput> = {
+  const result = await runHook(hookPath, {
     hook_event_name: "UserPromptSubmit",
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
     permission_mode: "acceptEdits",
     prompt: "Refactor this code",
-  };
-
-  const result = await testHook(hookPath, input);
+  });
 
   expect(result).toMatchObject({
     status: 0,

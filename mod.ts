@@ -44,6 +44,38 @@
  * }
  * ```
  *
+ * ## Testing Your Hooks
+ *
+ * The `runHook` function from `@chrisbarrett/claude-code-hook/testing` helps
+ * you write tests for your hooks. You pass an object representing the JSON
+ * input, and get back an object you can write assertions against.
+ *
+ * ```typescript
+ * import { expect } from "jsr:@std/expect";
+ * import { runHook } from "jsr:@chrisbarrett/claude-code-hook/testing";
+ *
+ * const hookPath = import.meta.resolve("./hooks/pre-compact.ts");
+ *
+ * Deno.test("preCompact hook handles auto trigger", async () => {
+ *   const result = await runHook(hookPath, {
+ *     hook_event_name: "PreCompact",
+ *     session_id: "test-session",
+ *     transcript_path: "/tmp/transcript.json",
+ *     cwd: "/tmp",
+ *     trigger: "auto",
+ *   });
+ *
+ *   expect(result).toMatchObject({
+ *     status: 0,
+ *     stdout: "",
+ *   });
+ * });
+ * ```
+ *
+ * As a convenience, if stdout or stderr happen to start with a '{' they will be
+ * parsed as JSON objects, making it convenient to write object matchers against
+ * your hook output.
+ *
  * ## Environment Variables
  *
  * ### CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN
