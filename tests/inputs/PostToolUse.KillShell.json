@@ -1,0 +1,13 @@
+{
+  "session_id": "b6e655f9-604a-4c74-b08d-c6231a11a4ed",
+  "transcript_path": "/Users/chris/.claude/projects/-Users-chris-src-chrisbarrett-deno-claude-code-hook/b6e655f9-604a-4c74-b08d-c6231a11a4ed.jsonl",
+  "cwd": "/Users/chris/src/chrisbarrett/deno-claude-code-hook",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "KillShell",
+  "tool_input": { "shell_id": "c26bed" },
+  "tool_response": {
+    "message": "Successfully killed shell: c26bed (sleep 30 && echo done)",
+    "shell_id": "c26bed"
+  }
+}

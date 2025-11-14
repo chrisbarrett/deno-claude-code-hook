@@ -39,6 +39,15 @@ declare -A tool_prompts=(
     ["Grep"]="Use the Grep tool to search for the pattern 'export' in the current directory. Use *ONLY* the Grep tool."
     ["Task"]="Use the Task tool to launch a haiku agent with description 'test task' to answer: what is 2+2?. Use *ONLY* the Task tool."
     ["NotebookEdit"]="Use the NotebookEdit tool to edit the notebook at /tmp/test-notebook-edit.ipynb, replacing the first cell with 'print(1)'. Use *ONLY* the NotebookEdit tool."
+    ["TodoWrite"]="Use the TodoWrite tool to create a todo list with one item: 'test task'. Use *ONLY* the TodoWrite tool."
+    ["WebFetch"]="Use the WebFetch tool to fetch content from https://example.com with prompt 'extract the page title'. Use *ONLY* the WebFetch tool."
+    ["WebSearch"]="Use the WebSearch tool to search for 'Claude Code hooks documentation'. Use *ONLY* the WebSearch tool."
+    ["SlashCommand"]="Use the SlashCommand tool to execute the command '/test-command'. Use *ONLY* the SlashCommand tool."
+)
+
+# Special case: Background bash workflow uses multiple tools in sequence
+declare -A workflow_prompts=(
+    ["BackgroundBash"]="Start a background bash job that runs 'sleep 30 && echo done', then IMMEDIATELY use BashOutput to check its output (it will be empty/running), then IMMEDIATELY use KillShell to kill it while it's still running. Follow this exact sequence: 1) Use Bash tool with run_in_background=true to start 'sleep 30 && echo done', 2) IMMEDIATELY use BashOutput to retrieve output using the shell ID (don't wait), 3) IMMEDIATELY use KillShell to terminate the running background shell."
 )
 
 mkdir -p "$outdir"
@@ -76,10 +85,10 @@ for tool_name in "${!tool_prompts[@]}"; do
     settings_json=$(jq -n --arg tool "$tool_name" '{
         hooks: {
             PreToolUse: [{
-                hooks: [{ type: "command", command: ("./scripts/hook.sh PreToolUse." + $tool) }]
+                hooks: [{ type: "command", command: ("./scripts/hook.sh PreToolUse " + $tool) }]
             }],
             PostToolUse: [{
-                hooks: [{ type: "command", command: ("./scripts/hook.sh PostToolUse." + $tool) }]
+                hooks: [{ type: "command", command: ("./scripts/hook.sh PostToolUse " + $tool) }]
             }],
         }
     }')
@@ -87,6 +96,32 @@ for tool_name in "${!tool_prompts[@]}"; do
     echo "+ claude (PreToolUse.$tool_name, PostToolUse.$tool_name)"
     # NOTE: permissions must be bypassed to avoid tool prompts.
     claude --model haiku -p "$prompt" --settings "$settings_json" --permission-mode bypassPermissions >/dev/null &
+done
+
+# Handle multi-tool workflows
+for workflow_name in "${!workflow_prompts[@]}"; do
+    prompt="${workflow_prompts[$workflow_name]}"
+
+    # For background bash workflow, we need to capture BashOutput and KillShell
+    if [[ "$workflow_name" == "BackgroundBash" ]]; then
+        settings_json=$(jq -n '{
+            hooks: {
+                PreToolUse: [{
+                    hooks: [{ type: "command", command: "./scripts/hook.sh PreToolUse BashOutput" }]
+                }, {
+                    hooks: [{ type: "command", command: "./scripts/hook.sh PreToolUse KillShell" }]
+                }],
+                PostToolUse: [{
+                    hooks: [{ type: "command", command: "./scripts/hook.sh PostToolUse BashOutput" }]
+                }, {
+                    hooks: [{ type: "command", command: "./scripts/hook.sh PostToolUse KillShell" }]
+                }]
+            }
+        }')
+
+        echo "+ claude ($workflow_name: BashOutput, KillShell)"
+        claude --model haiku -p "$prompt" --settings "$settings_json" --permission-mode bypassPermissions >/dev/null &
+    fi
 done
 
 wait

@@ -1,0 +1,15 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "SlashCommand",
+  "tool_input": {
+    "command": "/test-command"
+  },
+  "tool_response": {
+    "success": true,
+    "commandName": "test-command"
+  }
+}

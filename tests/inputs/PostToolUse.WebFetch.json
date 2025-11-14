@@ -1,0 +1,20 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "WebFetch",
+  "tool_input": {
+    "url": "https://example.com",
+    "prompt": "extract the page title"
+  },
+  "tool_response": {
+    "bytes": 513,
+    "code": 200,
+    "codeText": "OK",
+    "result": "# Page Title\n\nThe page title is **\"Example Domain\"**\n\nThis appears in both the heading structure and serves as the primary heading on the page, which reads: \"This domain is for use in documentation examples without needing permission.\"",
+    "durationMs": 3210,
+    "url": "https://example.com"
+  }
+}

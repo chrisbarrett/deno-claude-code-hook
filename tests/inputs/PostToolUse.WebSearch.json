@@ -1,0 +1,63 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "WebSearch",
+  "tool_input": {
+    "query": "Claude Code hooks documentation"
+  },
+  "tool_response": {
+    "query": "Claude Code hooks documentation",
+    "results": [
+      {
+        "tool_use_id": "srvtoolu_01J9LMfaPwBFoYw3DYvCn14E",
+        "content": [
+          {
+            "title": "Get started with Claude Code hooks - Claude Code Docs",
+            "url": "https://docs.claude.com/en/docs/claude-code/hooks-guide"
+          },
+          {
+            "title": "Hooks reference - Claude Docs",
+            "url": "https://docs.claude.com/en/docs/claude-code/hooks"
+          },
+          {
+            "title": "GitHub - disler/claude-code-hooks-mastery",
+            "url": "https://github.com/disler/claude-code-hooks-mastery"
+          },
+          {
+            "title": "ClaudeLog - Claude Code Docs, Guides, Tutorials & Best Practices",
+            "url": "https://claudelog.com/mechanics/hooks/"
+          },
+          {
+            "title": "Claude Code Hooks | GitButler Docs",
+            "url": "https://docs.gitbutler.com/features/ai-integration/claude-code-hooks"
+          },
+          {
+            "title": "What is Claude Code Hooks and How to Use It",
+            "url": "https://apidog.com/blog/claude-code-hooks/"
+          },
+          {
+            "title": "Automate Your AI Workflows with Claude Code Hooks | Butler's Log",
+            "url": "https://blog.gitbutler.com/automate-your-ai-workflows-with-claude-code-hooks"
+          },
+          {
+            "title": "How I’m Using Claude Code Hooks (Newest Feature) To Fully Automate My Workflow",
+            "url": "https://medium.com/@joe.njenga/use-claude-code-hooks-newest-feature-to-fully-automate-your-workflow-341b9400cfbe"
+          },
+          {
+            "title": "GitHub - disler/claude-code-hooks-multi-agent-observability: Real-time monitoring for Claude Code agents through simple hook event tracking.",
+            "url": "https://github.com/disler/claude-code-hooks-multi-agent-observability"
+          },
+          {
+            "title": "GitHub - decider/claude-hooks: Comprehensive hooks for Claude Code to enforce clean code practices and automate workflows",
+            "url": "https://github.com/decider/claude-hooks"
+          }
+        ]
+      },
+      "I've found comprehensive documentation on Claude Code hooks. Here's what the search results reveal:\n\n## Official Claude Code Hooks Documentation\n\nThis page provides reference documentation for implementing hooks in Claude Code, with a quickstart guide and examples available.\n\n### What Are Hooks?\n\nClaude Code Hooks are user-defined shell commands that execute automatically at specific points in Claude Code's lifecycle, acting as triggers that you can configure to fire before or after certain actions. Hooks provide deterministic, programmatic control over Claude Code's behavior, ensuring certain actions always happen rather than relying on the LLM to choose to run them.\n\n### Hook Events\n\nClaude Code provides several hook events that run at different points in the workflow, including PreToolUse (runs before tool calls and can block them) and SessionEnd (runs when Claude Code session ends).\n\n### Configuration\n\nClaude Code hooks are configured in your settings files with a structure that includes EventName, a matcher pattern to match tool names, and the hooks array.\n\n### Security Considerations\n\nYou must consider the security implications of hooks as they run automatically during the agent loop with your current environment's credentials, and you should always review your hooks implementation before registering them.\n\n### Recent Features\n\nStarting in v2.0.10, PreToolUse hooks can modify tool inputs before execution by intercepting tool calls and modifying the JSON input, letting execution proceed with corrected parameters.\n\nThe official documentation is available at **https://docs.claude.com/en/docs/claude-code/hooks-guide** and **https://docs.claude.com/en/docs/claude-code/hooks** for the reference documentation."
+    ],
+    "durationSeconds": 10.594157542000001
+  }
+}

@@ -92,6 +92,30 @@ Deno.test("parse PreToolUse.NotebookEdit.json", async (t) => {
   await testHookInput(t, "PreToolUse.NotebookEdit", schemas.preToolUseInput);
 });
 
+Deno.test("parse PreToolUse.TodoWrite.json", async (t) => {
+  await testHookInput(t, "PreToolUse.TodoWrite", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.WebFetch.json", async (t) => {
+  await testHookInput(t, "PreToolUse.WebFetch", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.WebSearch.json", async (t) => {
+  await testHookInput(t, "PreToolUse.WebSearch", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.SlashCommand.json", async (t) => {
+  await testHookInput(t, "PreToolUse.SlashCommand", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.BashOutput.json", async (t) => {
+  await testHookInput(t, "PreToolUse.BashOutput", schemas.preToolUseInput);
+});
+
+Deno.test("parse PreToolUse.KillShell.json", async (t) => {
+  await testHookInput(t, "PreToolUse.KillShell", schemas.preToolUseInput);
+});
+
 // Tool-specific PostToolUse tests
 Deno.test("parse PostToolUse.Read.json", async (t) => {
   await testHookInput(t, "PostToolUse.Read", schemas.postToolUseInput);
@@ -123,4 +147,28 @@ Deno.test("parse PostToolUse.Task.json", async (t) => {
 
 Deno.test("parse PostToolUse.NotebookEdit.json", async (t) => {
   await testHookInput(t, "PostToolUse.NotebookEdit", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.TodoWrite.json", async (t) => {
+  await testHookInput(t, "PostToolUse.TodoWrite", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.WebFetch.json", async (t) => {
+  await testHookInput(t, "PostToolUse.WebFetch", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.WebSearch.json", async (t) => {
+  await testHookInput(t, "PostToolUse.WebSearch", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.SlashCommand.json", async (t) => {
+  await testHookInput(t, "PostToolUse.SlashCommand", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.BashOutput.json", async (t) => {
+  await testHookInput(t, "PostToolUse.BashOutput", schemas.postToolUseInput);
+});
+
+Deno.test("parse PostToolUse.KillShell.json", async (t) => {
+  await testHookInput(t, "PostToolUse.KillShell", schemas.postToolUseInput);
 });

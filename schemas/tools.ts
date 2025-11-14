@@ -2,6 +2,23 @@
  */
 import { z } from "zod";
 
+// Shared enum schemas
+//
+// They are left open to extension to enable nice editor completions while still
+// allowing widening future changes.
+
+const notebookCellType = z.enum(["code", "markdown"]).or(z.string());
+const notebookEditMode = z.enum(["replace", "insert", "delete"]).or(z.string());
+const modelType = z.enum(["sonnet", "opus", "haiku"]).or(z.string());
+
+const todoStatus = z
+  .enum(["pending", "in_progress", "completed"])
+  .or(z.string());
+
+const grepOutputMode = z
+  .enum(["content", "files_with_matches", "count"])
+  .or(z.string());
+
 const preToolInputs = {
   read: z.object({
     type: z.literal("Read"),
@@ -49,8 +66,8 @@ const preToolInputs = {
       notebook_path: z.string(),
       new_source: z.string(),
       cell_id: z.string().optional(),
-      cell_type: z.enum(["code", "markdown"]).optional(),
-      edit_mode: z.enum(["replace", "insert", "delete"]).optional(),
+      cell_type: notebookCellType.optional(),
+      edit_mode: notebookEditMode.optional(),
     }),
   }),
 
@@ -72,9 +89,7 @@ const preToolInputs = {
     tool_input: z.object({
       pattern: z.string(),
       path: z.string().optional(),
-      output_mode: z
-        .enum(["content", "files_with_matches", "count"])
-        .optional(),
+      output_mode: grepOutputMode.optional(),
       glob: z.string().optional(),
       type: z.string().optional(),
       "-i": z.boolean().optional(),
@@ -94,8 +109,66 @@ const preToolInputs = {
       description: z.string(),
       prompt: z.string(),
       subagent_type: z.string(),
-      model: z.enum(["sonnet", "opus", "haiku"]).optional(),
+      model: modelType.optional(),
       resume: z.string().optional(),
+    }),
+  }),
+
+  todoWrite: z.object({
+    type: z.literal("TodoWrite"),
+    tool_name: z.literal("TodoWrite"),
+    tool_input: z.object({
+      todos: z.array(
+        z.object({
+          content: z.string(),
+          status: todoStatus,
+          activeForm: z.string(),
+        }),
+      ),
+    }),
+  }),
+
+  webFetch: z.object({
+    type: z.literal("WebFetch"),
+    tool_name: z.literal("WebFetch"),
+    tool_input: z.object({
+      url: z.string(),
+      prompt: z.string(),
+    }),
+  }),
+
+  webSearch: z.object({
+    type: z.literal("WebSearch"),
+    tool_name: z.literal("WebSearch"),
+    tool_input: z.object({
+      query: z.string(),
+      allowed_domains: z.array(z.string()).optional(),
+      blocked_domains: z.array(z.string()).optional(),
+    }),
+  }),
+
+  slashCommand: z.object({
+    type: z.literal("SlashCommand"),
+    tool_name: z.literal("SlashCommand"),
+    tool_input: z.object({
+      command: z.string(),
+    }),
+  }),
+
+  bashOutput: z.object({
+    type: z.literal("BashOutput"),
+    tool_name: z.literal("BashOutput"),
+    tool_input: z.object({
+      bash_id: z.string(),
+      filter: z.string().optional(),
+    }),
+  }),
+
+  killShell: z.object({
+    type: z.literal("KillShell"),
+    tool_name: z.literal("KillShell"),
+    tool_input: z.object({
+      shell_id: z.string(),
     }),
   }),
 
@@ -146,6 +219,12 @@ export const preTool = z.preprocess(
       "Bash",
       "Grep",
       "Task",
+      "TodoWrite",
+      "WebFetch",
+      "WebSearch",
+      "SlashCommand",
+      "BashOutput",
+      "KillShell",
     ];
     it.type = knownTools.includes(it.tool_name) ? it.tool_name : "Other";
     return it;
@@ -159,6 +238,12 @@ export const preTool = z.preprocess(
     preToolInputs.bash,
     preToolInputs.grep,
     preToolInputs.task,
+    preToolInputs.todoWrite,
+    preToolInputs.webFetch,
+    preToolInputs.webSearch,
+    preToolInputs.slashCommand,
+    preToolInputs.bashOutput,
+    preToolInputs.killShell,
     preToolInputs.unknown,
   ]),
 );
@@ -229,8 +314,8 @@ const postToolInputs = {
       notebook_path: z.string(),
       new_source: z.string(),
       cell_id: z.string().optional(),
-      cell_type: z.enum(["code", "markdown"]).optional(),
-      edit_mode: z.enum(["replace", "insert", "delete"]).optional(),
+      cell_type: notebookCellType.optional(),
+      edit_mode: notebookEditMode.optional(),
     }),
     tool_response: z.record(z.string(), z.unknown()),
   }),
@@ -259,9 +344,7 @@ const postToolInputs = {
     tool_input: z.object({
       pattern: z.string(),
       path: z.string().optional(),
-      output_mode: z
-        .enum(["content", "files_with_matches", "count"])
-        .optional(),
+      output_mode: grepOutputMode.optional(),
       glob: z.string().optional(),
       type: z.string().optional(),
       "-i": z.boolean().optional(),
@@ -286,21 +369,129 @@ const postToolInputs = {
       description: z.string(),
       prompt: z.string(),
       subagent_type: z.string(),
-      model: z.enum(["sonnet", "opus", "haiku"]).optional(),
+      model: modelType.optional(),
       resume: z.string().optional(),
     }),
     tool_response: z.object({
       status: z.string(),
       prompt: z.string(),
       agentId: z.string(),
-      content: z.array(z.object({
-        type: z.string(),
-        text: z.string(),
-      })),
+      content: z.array(
+        z.object({
+          type: z.string(),
+          text: z.string(),
+        }),
+      ),
       totalDurationMs: z.number().int().nonnegative(),
       totalTokens: z.number().int().nonnegative(),
       totalToolUseCount: z.number().int().nonnegative(),
       usage: z.record(z.string(), z.unknown()),
+    }),
+  }),
+
+  todoWrite: z.object({
+    type: z.literal("TodoWrite"),
+    tool_name: z.literal("TodoWrite"),
+    tool_input: z.object({
+      todos: z.array(
+        z.object({
+          content: z.string(),
+          status: todoStatus,
+          activeForm: z.string(),
+        }),
+      ),
+    }),
+    tool_response: z.object({
+      oldTodos: z.array(
+        z.object({
+          content: z.string(),
+          status: todoStatus,
+          activeForm: z.string(),
+        }),
+      ),
+      newTodos: z.array(
+        z.object({
+          content: z.string(),
+          status: todoStatus,
+          activeForm: z.string(),
+        }),
+      ),
+    }),
+  }),
+
+  webFetch: z.object({
+    type: z.literal("WebFetch"),
+    tool_name: z.literal("WebFetch"),
+    tool_input: z.object({
+      url: z.string(),
+      prompt: z.string(),
+    }),
+    tool_response: z.object({
+      bytes: z.number().int().nonnegative(),
+      code: z.number().int().nonnegative(),
+      codeText: z.string(),
+      result: z.string(),
+      durationMs: z.number().int().nonnegative(),
+      url: z.string(),
+    }),
+  }),
+
+  webSearch: z.object({
+    type: z.literal("WebSearch"),
+    tool_name: z.literal("WebSearch"),
+    tool_input: z.object({
+      query: z.string(),
+      allowed_domains: z.array(z.string()).optional(),
+      blocked_domains: z.array(z.string()).optional(),
+    }),
+    tool_response: z.object({
+      query: z.string(),
+      results: z.array(z.unknown()),
+      durationSeconds: z.number(),
+    }),
+  }),
+
+  slashCommand: z.object({
+    type: z.literal("SlashCommand"),
+    tool_name: z.literal("SlashCommand"),
+    tool_input: z.object({
+      command: z.string(),
+    }),
+    tool_response: z.object({
+      success: z.boolean(),
+      commandName: z.string(),
+    }),
+  }),
+
+  bashOutput: z.object({
+    type: z.literal("BashOutput"),
+    tool_name: z.literal("BashOutput"),
+    tool_input: z.object({
+      bash_id: z.string(),
+      filter: z.string().optional(),
+    }),
+    tool_response: z.object({
+      shellId: z.string(),
+      command: z.string(),
+      status: z.string(),
+      exitCode: z.number().int().nullable(),
+      stdout: z.string(),
+      stderr: z.string(),
+      stdoutLines: z.number().int().nonnegative(),
+      stderrLines: z.number().int().nonnegative(),
+      timestamp: z.string(),
+    }),
+  }),
+
+  killShell: z.object({
+    type: z.literal("KillShell"),
+    tool_name: z.literal("KillShell"),
+    tool_input: z.object({
+      shell_id: z.string(),
+    }),
+    tool_response: z.object({
+      message: z.string(),
+      shell_id: z.string(),
     }),
   }),
 
@@ -348,6 +539,12 @@ export const postTool = z.preprocess(
       "Bash",
       "Grep",
       "Task",
+      "TodoWrite",
+      "WebFetch",
+      "WebSearch",
+      "SlashCommand",
+      "BashOutput",
+      "KillShell",
     ];
     it.type = knownTools.includes(it.tool_name) ? it.tool_name : "Other";
     return it;
@@ -361,6 +558,12 @@ export const postTool = z.preprocess(
     postToolInputs.bash,
     postToolInputs.grep,
     postToolInputs.task,
+    postToolInputs.todoWrite,
+    postToolInputs.webFetch,
+    postToolInputs.webSearch,
+    postToolInputs.slashCommand,
+    postToolInputs.bashOutput,
+    postToolInputs.killShell,
     postToolInputs.unknown,
   ]),
 );

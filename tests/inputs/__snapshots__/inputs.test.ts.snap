@@ -113,7 +113,7 @@ snapshot[`parse PreToolUse.Bash.json 1`] = `
   session_id: "test-session-id",
   tool_input: {
     command: "pwd",
-    description: "Show current working directory",
+    description: "Print working directory",
   },
   tool_name: "Bash",
   transcript_path: "/test/project/.claude/transcripts/test-session.json",
@@ -168,6 +168,103 @@ snapshot[`parse PreToolUse.NotebookEdit.json 1`] = `
   tool_name: "NotebookEdit",
   transcript_path: "/test/project/.claude/transcripts/test-session.json",
   type: "NotebookEdit",
+}
+`;
+
+snapshot[`parse PreToolUse.TodoWrite.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PreToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "test-session-id",
+  tool_input: {
+    todos: [
+      {
+        activeForm: "Testing task",
+        content: "test task",
+        status: "pending",
+      },
+    ],
+  },
+  tool_name: "TodoWrite",
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "TodoWrite",
+}
+`;
+
+snapshot[`parse PreToolUse.WebFetch.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PreToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "test-session-id",
+  tool_input: {
+    prompt: "extract the page title",
+    url: "https://example.com",
+  },
+  tool_name: "WebFetch",
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "WebFetch",
+}
+`;
+
+snapshot[`parse PreToolUse.WebSearch.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PreToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "test-session-id",
+  tool_input: {
+    query: "Claude Code hooks documentation",
+  },
+  tool_name: "WebSearch",
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "WebSearch",
+}
+`;
+
+snapshot[`parse PreToolUse.SlashCommand.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PreToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "test-session-id",
+  tool_input: {
+    command: "/test-command",
+  },
+  tool_name: "SlashCommand",
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "SlashCommand",
+}
+`;
+
+snapshot[`parse PreToolUse.BashOutput.json 1`] = `
+{
+  cwd: "/Users/chris/src/chrisbarrett/deno-claude-code-hook",
+  hook_event_name: "PreToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "b6e655f9-604a-4c74-b08d-c6231a11a4ed",
+  tool_input: {
+    bash_id: "c26bed",
+  },
+  tool_name: "BashOutput",
+  transcript_path: "/Users/chris/.claude/projects/-Users-chris-src-chrisbarrett-deno-claude-code-hook/b6e655f9-604a-4c74-b08d-c6231a11a4ed.jsonl",
+  type: "BashOutput",
+}
+`;
+
+snapshot[`parse PreToolUse.KillShell.json 1`] = `
+{
+  cwd: "/Users/chris/src/chrisbarrett/deno-claude-code-hook",
+  hook_event_name: "PreToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "b6e655f9-604a-4c74-b08d-c6231a11a4ed",
+  tool_input: {
+    shell_id: "c26bed",
+  },
+  tool_name: "KillShell",
+  transcript_path: "/Users/chris/.claude/projects/-Users-chris-src-chrisbarrett-deno-claude-code-hook/b6e655f9-604a-4c74-b08d-c6231a11a4ed.jsonl",
+  type: "KillShell",
 }
 `;
 
@@ -798,7 +895,7 @@ snapshot[`parse PostToolUse.Bash.json 1`] = `
   session_id: "test-session-id",
   tool_input: {
     command: "pwd",
-    description: "Show current working directory",
+    description: "Print working directory",
   },
   tool_name: "Bash",
   tool_response: {
@@ -860,29 +957,29 @@ snapshot[`parse PostToolUse.Task.json 1`] = `
   },
   tool_name: "Task",
   tool_response: {
-    agentId: "ad519039",
+    agentId: "ca8e0ee5",
     content: [
       {
         text: "2 + 2 = 4
 
-This is a simple arithmetic operation. Is there something specific you'd like help with in your codebase?",
+This is a straightforward arithmetic question. Is there anything else I can help you with regarding your Deno Claude Code hook project?",
         type: "text",
       },
     ],
     prompt: "What is 2+2?",
     status: "completed",
-    totalDurationMs: 2613,
-    totalTokens: 23879,
+    totalDurationMs: 2785,
+    totalTokens: 23876,
     totalToolUseCount: 0,
     usage: {
       cache_creation: {
         ephemeral_1h_input_tokens: 0,
-        ephemeral_5m_input_tokens: 0,
+        ephemeral_5m_input_tokens: 23832,
       },
-      cache_creation_input_tokens: 0,
-      cache_read_input_tokens: 23840,
+      cache_creation_input_tokens: 23832,
+      cache_read_input_tokens: 0,
       input_tokens: 3,
-      output_tokens: 36,
+      output_tokens: 41,
       service_tier: "standard",
     },
   },
@@ -913,5 +1010,221 @@ snapshot[`parse PostToolUse.NotebookEdit.json 1`] = `
   },
   transcript_path: "/test/project/.claude/transcripts/test-session.json",
   type: "NotebookEdit",
+}
+`;
+
+snapshot[`parse PostToolUse.TodoWrite.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PostToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "test-session-id",
+  tool_input: {
+    todos: [
+      {
+        activeForm: "Testing task",
+        content: "test task",
+        status: "pending",
+      },
+    ],
+  },
+  tool_name: "TodoWrite",
+  tool_response: {
+    newTodos: [
+      {
+        activeForm: "Testing task",
+        content: "test task",
+        status: "pending",
+      },
+    ],
+    oldTodos: [],
+  },
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "TodoWrite",
+}
+`;
+
+snapshot[`parse PostToolUse.WebFetch.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PostToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "test-session-id",
+  tool_input: {
+    prompt: "extract the page title",
+    url: "https://example.com",
+  },
+  tool_name: "WebFetch",
+  tool_response: {
+    bytes: 513,
+    code: 200,
+    codeText: "OK",
+    durationMs: 3210,
+    result: '# Page Title
+
+The page title is **"Example Domain"**
+
+This appears in both the heading structure and serves as the primary heading on the page, which reads: "This domain is for use in documentation examples without needing permission."',
+    url: "https://example.com",
+  },
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "WebFetch",
+}
+`;
+
+snapshot[`parse PostToolUse.WebSearch.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PostToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "test-session-id",
+  tool_input: {
+    query: "Claude Code hooks documentation",
+  },
+  tool_name: "WebSearch",
+  tool_response: {
+    durationSeconds: 10.594157542000001,
+    query: "Claude Code hooks documentation",
+    results: [
+      {
+        content: [
+          {
+            title: "Get started with Claude Code hooks - Claude Code Docs",
+            url: "https://docs.claude.com/en/docs/claude-code/hooks-guide",
+          },
+          {
+            title: "Hooks reference - Claude Docs",
+            url: "https://docs.claude.com/en/docs/claude-code/hooks",
+          },
+          {
+            title: "GitHub - disler/claude-code-hooks-mastery",
+            url: "https://github.com/disler/claude-code-hooks-mastery",
+          },
+          {
+            title: "ClaudeLog - Claude Code Docs, Guides, Tutorials & Best Practices",
+            url: "https://claudelog.com/mechanics/hooks/",
+          },
+          {
+            title: "Claude Code Hooks | GitButler Docs",
+            url: "https://docs.gitbutler.com/features/ai-integration/claude-code-hooks",
+          },
+          {
+            title: "What is Claude Code Hooks and How to Use It",
+            url: "https://apidog.com/blog/claude-code-hooks/",
+          },
+          {
+            title: "Automate Your AI Workflows with Claude Code Hooks | Butler's Log",
+            url: "https://blog.gitbutler.com/automate-your-ai-workflows-with-claude-code-hooks",
+          },
+          {
+            title: "How I’m Using Claude Code Hooks (Newest Feature) To Fully Automate My Workflow",
+            url: "https://medium.com/@joe.njenga/use-claude-code-hooks-newest-feature-to-fully-automate-your-workflow-341b9400cfbe",
+          },
+          {
+            title: "GitHub - disler/claude-code-hooks-multi-agent-observability: Real-time monitoring for Claude Code agents through simple hook event tracking.",
+            url: "https://github.com/disler/claude-code-hooks-multi-agent-observability",
+          },
+          {
+            title: "GitHub - decider/claude-hooks: Comprehensive hooks for Claude Code to enforce clean code practices and automate workflows",
+            url: "https://github.com/decider/claude-hooks",
+          },
+        ],
+        tool_use_id: "srvtoolu_01J9LMfaPwBFoYw3DYvCn14E",
+      },
+      "I've found comprehensive documentation on Claude Code hooks. Here's what the search results reveal:
+
+## Official Claude Code Hooks Documentation
+
+This page provides reference documentation for implementing hooks in Claude Code, with a quickstart guide and examples available.
+
+### What Are Hooks?
+
+Claude Code Hooks are user-defined shell commands that execute automatically at specific points in Claude Code's lifecycle, acting as triggers that you can configure to fire before or after certain actions. Hooks provide deterministic, programmatic control over Claude Code's behavior, ensuring certain actions always happen rather than relying on the LLM to choose to run them.
+
+### Hook Events
+
+Claude Code provides several hook events that run at different points in the workflow, including PreToolUse (runs before tool calls and can block them) and SessionEnd (runs when Claude Code session ends).
+
+### Configuration
+
+Claude Code hooks are configured in your settings files with a structure that includes EventName, a matcher pattern to match tool names, and the hooks array.
+
+### Security Considerations
+
+You must consider the security implications of hooks as they run automatically during the agent loop with your current environment's credentials, and you should always review your hooks implementation before registering them.
+
+### Recent Features
+
+Starting in v2.0.10, PreToolUse hooks can modify tool inputs before execution by intercepting tool calls and modifying the JSON input, letting execution proceed with corrected parameters.
+
+The official documentation is available at **https://docs.claude.com/en/docs/claude-code/hooks-guide** and **https://docs.claude.com/en/docs/claude-code/hooks** for the reference documentation.",
+    ],
+  },
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "WebSearch",
+}
+`;
+
+snapshot[`parse PostToolUse.SlashCommand.json 1`] = `
+{
+  cwd: "/test/project",
+  hook_event_name: "PostToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "test-session-id",
+  tool_input: {
+    command: "/test-command",
+  },
+  tool_name: "SlashCommand",
+  tool_response: {
+    commandName: "test-command",
+    success: true,
+  },
+  transcript_path: "/test/project/.claude/transcripts/test-session.json",
+  type: "SlashCommand",
+}
+`;
+
+snapshot[`parse PostToolUse.BashOutput.json 1`] = `
+{
+  cwd: "/Users/chris/src/chrisbarrett/deno-claude-code-hook",
+  hook_event_name: "PostToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "b6e655f9-604a-4c74-b08d-c6231a11a4ed",
+  tool_input: {
+    bash_id: "c26bed",
+  },
+  tool_name: "BashOutput",
+  tool_response: {
+    command: "sleep 30 && echo done",
+    exitCode: null,
+    shellId: "c26bed",
+    status: "running",
+    stderr: "",
+    stderrLines: 1,
+    stdout: "",
+    stdoutLines: 1,
+    timestamp: "2025-11-14T09:15:08.128Z",
+  },
+  transcript_path: "/Users/chris/.claude/projects/-Users-chris-src-chrisbarrett-deno-claude-code-hook/b6e655f9-604a-4c74-b08d-c6231a11a4ed.jsonl",
+  type: "BashOutput",
+}
+`;
+
+snapshot[`parse PostToolUse.KillShell.json 1`] = `
+{
+  cwd: "/Users/chris/src/chrisbarrett/deno-claude-code-hook",
+  hook_event_name: "PostToolUse",
+  permission_mode: "bypassPermissions",
+  session_id: "b6e655f9-604a-4c74-b08d-c6231a11a4ed",
+  tool_input: {
+    shell_id: "c26bed",
+  },
+  tool_name: "KillShell",
+  tool_response: {
+    message: "Successfully killed shell: c26bed (sleep 30 && echo done)",
+    shell_id: "c26bed",
+  },
+  transcript_path: "/Users/chris/.claude/projects/-Users-chris-src-chrisbarrett-deno-claude-code-hook/b6e655f9-604a-4c74-b08d-c6231a11a4ed.jsonl",
+  type: "KillShell",
 }
 `;
