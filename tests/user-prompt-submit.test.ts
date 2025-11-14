@@ -21,12 +21,15 @@ Deno.test("userPromptSubmit - blocks dangerous prompts", async () => {
     prompt: "Delete production database",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "block",
-    reason: "Dangerous operations blocked in production environment",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "block",
+      reason: "Dangerous operations blocked in production environment",
+    },
   });
 });
 
@@ -40,14 +43,18 @@ Deno.test("userPromptSubmit - adds context for test prompts", async () => {
     prompt: "Help me write a test for the login function",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "allow",
-    hookSpecificOutput: {
-      additionalContext:
-        "You are working on tests. Prioritize test-related suggestions.",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+      hookSpecificOutput: {
+        hookEventName: "UserPromptSubmit",
+        additionalContext:
+          "You are working on tests. Prioritize test-related suggestions.",
+      },
     },
   });
 });
@@ -62,10 +69,13 @@ Deno.test("userPromptSubmit - allows normal prompts", async () => {
     prompt: "Refactor this code",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });

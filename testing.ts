@@ -5,8 +5,14 @@
  */
 
 import $ from "@david/dax";
-import type { genericInput, genericOutput } from "./schemas/hooks.ts";
+import type { genericInput } from "./schemas/hooks.ts";
 import type { z } from "zod";
+
+type HookResult = {
+  status: number;
+  stdout: string;
+  stderr: string;
+};
 
 /**
  * Execute a hook script with JSON input via stdin and return parsed JSON output.
@@ -16,20 +22,32 @@ import type { z } from "zod";
  *
  * @param hookPath - Absolute path to the hook script
  * @param input - Input object to serialize as JSON and pipe to stdin
- * @returns Parsed JSON output from stdout, or undefined if no output
  */
 export const testHook = async <In extends z.input<typeof genericInput>>(
   hookPath: string,
   input: In,
-): Promise<z.output<typeof genericOutput> | undefined> => {
+): Promise<HookResult> => {
   const result = await $`deno run --allow-all ${hookPath}`
-    .stdinText(JSON.stringify(input))
-    .text();
+    .stdout("piped")
+    .stderr("piped")
+    .stdinText(JSON.stringify(input));
 
-  if (result.trim().length === 0) {
-    return;
-  }
-  return JSON.parse(result);
+  const parseIfJson = (str: string) => {
+    if (!str || !str.trim().startsWith("{")) {
+      return str;
+    }
+    try {
+      return JSON.parse(str);
+    } catch {
+      return str;
+    }
+  };
+
+  return {
+    status: result.code,
+    stdout: parseIfJson(result.stdout),
+    stderr: parseIfJson(result.stderr),
+  };
 };
 
 /**

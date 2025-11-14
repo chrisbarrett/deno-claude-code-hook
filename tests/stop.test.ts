@@ -15,12 +15,15 @@ Deno.test("stop - blocks stop when hook is not active", async () => {
     stop_hook_active: false,
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "block",
-    reason: "Please verify the changes before stopping",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "block",
+      reason: "Please verify the changes before stopping",
+    },
   });
 });
 
@@ -34,10 +37,13 @@ Deno.test("stop - allows stop when hook is already active", async () => {
     stop_hook_active: true,
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });

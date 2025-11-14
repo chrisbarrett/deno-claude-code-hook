@@ -14,8 +14,10 @@ Deno.test("notification - processes notification message", async () => {
     message: "Claude is waiting for your input",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  // Notification hooks typically don't return output
-  expect(output).toBeUndefined();
+  // Notification hooks typically don't return JSON output
+  expect(result).toMatchObject({
+    status: 0,
+  });
 });

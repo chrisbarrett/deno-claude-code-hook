@@ -14,12 +14,16 @@ Deno.test("sessionStart - handles startup source", async () => {
     source: "startup",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    hookSpecificOutput: {
-      additionalContext: "Fresh session started",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "SessionStart",
+        additionalContext: "Fresh session started",
+      },
     },
   });
 });
@@ -33,12 +37,16 @@ Deno.test("sessionStart - handles resume source", async () => {
     source: "resume",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    hookSpecificOutput: {
-      additionalContext: "Resuming previous session",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "SessionStart",
+        additionalContext: "Resuming previous session",
+      },
     },
   });
 });
@@ -52,12 +60,16 @@ Deno.test("sessionStart - handles clear source", async () => {
     source: "clear",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    hookSpecificOutput: {
-      additionalContext: "Session cleared, starting fresh",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "SessionStart",
+        additionalContext: "Session cleared, starting fresh",
+      },
     },
   });
 });
@@ -71,12 +83,16 @@ Deno.test("sessionStart - handles compact source", async () => {
     source: "compact",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    hookSpecificOutput: {
-      additionalContext: "Session restarted after compaction",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "SessionStart",
+        additionalContext: "Session restarted after compaction",
+      },
     },
   });
 });

@@ -19,13 +19,17 @@ Deno.test("preToolUse - blocks Write tool", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    hookSpecificOutput: {
-      permissionDecision: "deny",
-      permissionDecisionReason: "Write operations are blocked in this test",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "deny",
+        permissionDecisionReason: "Write operations are blocked in this test",
+      },
     },
   });
 });
@@ -43,13 +47,17 @@ Deno.test("preToolUse - allows Read tool", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    hookSpecificOutput: {
-      permissionDecision: "allow",
-      permissionDecisionReason: "Tool is allowed",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "allow",
+        permissionDecisionReason: "Tool is allowed",
+      },
     },
   });
 });

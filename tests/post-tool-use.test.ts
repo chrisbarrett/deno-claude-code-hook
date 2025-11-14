@@ -24,13 +24,17 @@ Deno.test("postToolUse - adds context for interrupted bash command", async () =>
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "allow",
-    hookSpecificOutput: {
-      additionalContext: "Command was interrupted",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "PostToolUse",
+        additionalContext: "Command was interrupted",
+      },
+      decision: "allow",
     },
   });
 });
@@ -54,11 +58,14 @@ Deno.test("postToolUse - allows successful bash command", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });
 
@@ -84,11 +91,14 @@ Deno.test("postToolUse - handles real Bash payload format", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });
 
@@ -116,11 +126,14 @@ Deno.test("postToolUse - handles real Read payload format", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });
 
@@ -148,10 +161,13 @@ Deno.test("postToolUse - handles real Glob payload format", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  expect(output).toBeDefined();
-  expect(output).toMatchObject({
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });
