@@ -19,14 +19,16 @@ const grepOutputMode = z
   .enum(["content", "files_with_matches", "count"])
   .or(z.string());
 
+const uint = z.number().int().nonnegative();
+
 const preToolInputs = {
   read: z.object({
     type: z.literal("Read"),
     tool_name: z.literal("Read"),
     tool_input: z.object({
       file_path: z.string(),
-      offset: z.number().int().nonnegative().optional(),
-      limit: z.number().int().nonnegative().optional(),
+      offset: uint.optional(),
+      limit: uint.optional(),
     }),
   }),
 
@@ -77,7 +79,7 @@ const preToolInputs = {
     tool_input: z.object({
       command: z.string(),
       description: z.string().optional(),
-      timeout: z.number().int().nonnegative().optional(),
+      timeout: uint.optional(),
       run_in_background: z.boolean().optional(),
       dangerouslyDisableSandbox: z.boolean().optional(),
     }),
@@ -94,11 +96,11 @@ const preToolInputs = {
       type: z.string().optional(),
       "-i": z.boolean().optional(),
       "-n": z.boolean().optional(),
-      "-A": z.number().int().nonnegative().optional(),
-      "-B": z.number().int().nonnegative().optional(),
-      "-C": z.number().int().nonnegative().optional(),
+      "-A": uint.optional(),
+      "-B": uint.optional(),
+      "-C": uint.optional(),
       multiline: z.boolean().optional(),
-      head_limit: z.number().int().nonnegative().optional(),
+      head_limit: uint.optional(),
     }),
   }),
 
@@ -255,17 +257,17 @@ const postToolInputs = {
     tool_name: z.literal("Read"),
     tool_input: z.object({
       file_path: z.string(),
-      offset: z.number().int().nonnegative().optional(),
-      limit: z.number().int().nonnegative().optional(),
+      offset: uint.optional(),
+      limit: uint.optional(),
     }),
     tool_response: z.object({
       type: z.literal("text"),
       file: z.object({
         filePath: z.string(),
         content: z.string(),
-        numLines: z.number().int().nonnegative(),
-        startLine: z.number().int().nonnegative(),
-        totalLines: z.number().int().nonnegative(),
+        numLines: uint,
+        startLine: uint,
+        totalLines: uint,
       }),
     }),
   }),
@@ -301,8 +303,8 @@ const postToolInputs = {
     }),
     tool_response: z.object({
       filenames: z.array(z.string()),
-      durationMs: z.number().int().nonnegative(),
-      numFiles: z.number().int().nonnegative(),
+      durationMs: uint,
+      numFiles: uint,
       truncated: z.boolean(),
     }),
   }),
@@ -326,7 +328,7 @@ const postToolInputs = {
     tool_input: z.object({
       command: z.string(),
       description: z.string().optional(),
-      timeout: z.number().int().nonnegative().optional(),
+      timeout: uint.optional(),
       run_in_background: z.boolean().optional(),
       dangerouslyDisableSandbox: z.boolean().optional(),
     }),
@@ -349,11 +351,11 @@ const postToolInputs = {
       type: z.string().optional(),
       "-i": z.boolean().optional(),
       "-n": z.boolean().optional(),
-      "-A": z.number().int().nonnegative().optional(),
-      "-B": z.number().int().nonnegative().optional(),
-      "-C": z.number().int().nonnegative().optional(),
+      "-A": uint.optional(),
+      "-B": uint.optional(),
+      "-C": uint.optional(),
       multiline: z.boolean().optional(),
-      head_limit: z.number().int().nonnegative().optional(),
+      head_limit: uint.optional(),
     }),
     tool_response: z.union([
       z.object({ files: z.array(z.string()) }),
@@ -382,9 +384,9 @@ const postToolInputs = {
           text: z.string(),
         }),
       ),
-      totalDurationMs: z.number().int().nonnegative(),
-      totalTokens: z.number().int().nonnegative(),
-      totalToolUseCount: z.number().int().nonnegative(),
+      totalDurationMs: uint,
+      totalTokens: uint,
+      totalToolUseCount: uint,
       usage: z.record(z.string(), z.unknown()),
     }),
   }),
@@ -427,11 +429,11 @@ const postToolInputs = {
       prompt: z.string(),
     }),
     tool_response: z.object({
-      bytes: z.number().int().nonnegative(),
-      code: z.number().int().nonnegative(),
+      bytes: uint,
+      code: uint,
       codeText: z.string(),
       result: z.string(),
-      durationMs: z.number().int().nonnegative(),
+      durationMs: uint,
       url: z.string(),
     }),
   }),
@@ -477,8 +479,8 @@ const postToolInputs = {
       exitCode: z.number().int().nullable(),
       stdout: z.string(),
       stderr: z.string(),
-      stdoutLines: z.number().int().nonnegative(),
-      stderrLines: z.number().int().nonnegative(),
+      stdoutLines: uint,
+      stderrLines: uint,
       timestamp: z.string(),
     }),
   }),
