@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { postToolUseInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -11,6 +11,7 @@ Deno.test("postToolUse - adds context for interrupted bash command", async () =>
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     tool_name: "Bash",
     tool_input: {
       command: "sleep 100",
@@ -23,13 +24,17 @@ Deno.test("postToolUse - adds context for interrupted bash command", async () =>
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    decision: "allow",
-    hookSpecificOutput: {
-      additionalContext: "Command was interrupted",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "PostToolUse",
+        additionalContext: "Command was interrupted",
+      },
+      decision: "allow",
     },
   });
 });
@@ -40,6 +45,7 @@ Deno.test("postToolUse - allows successful bash command", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     tool_name: "Bash",
     tool_input: {
       command: "echo hello",
@@ -52,15 +58,18 @@ Deno.test("postToolUse - allows successful bash command", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });
 
-Deno.test("postToolUse - handles real payload format", async () => {
+Deno.test("postToolUse - handles real Bash payload format", async () => {
   // Real payload from Claude Code with interrupted and isImage fields
   const input: z.input<typeof postToolUseInput> = {
     hook_event_name: "PostToolUse",
@@ -82,10 +91,83 @@ Deno.test("postToolUse - handles real payload format", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
+  });
+});
+
+Deno.test("postToolUse - handles real Read payload format", async () => {
+  // Real payload from Claude Code for Read tool
+  const input: z.input<typeof postToolUseInput> = {
+    hook_event_name: "PostToolUse",
+    session_id: "test-session",
+    transcript_path: "/tmp/transcript.json",
+    cwd: "/tmp",
+    permission_mode: "acceptEdits",
+    tool_name: "Read",
+    tool_input: {
+      file_path: "/tmp/test.txt",
+    },
+    tool_response: {
+      type: "text",
+      file: {
+        filePath: "/tmp/test.txt",
+        content: "file contents here",
+        numLines: 156,
+        startLine: 1,
+        totalLines: 156,
+      },
+    },
+  };
+
+  const result = await testHook(hookPath, input);
+
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
+  });
+});
+
+Deno.test("postToolUse - handles real Glob payload format", async () => {
+  // Real payload from Claude Code for Glob tool
+  const input: z.input<typeof postToolUseInput> = {
+    hook_event_name: "PostToolUse",
+    session_id: "test-session",
+    transcript_path: "/tmp/transcript.json",
+    cwd: "/tmp/project",
+    permission_mode: "acceptEdits",
+    tool_name: "Glob",
+    tool_input: {
+      pattern: "src/**/*.ts",
+    },
+    tool_response: {
+      filenames: [
+        "/tmp/project/src/main.ts",
+        "/tmp/project/src/utils/helper.ts",
+        "/tmp/project/src/types/index.ts",
+      ],
+      durationMs: 15,
+      numFiles: 3,
+      truncated: false,
+    },
+  };
+
+  const result = await testHook(hookPath, input);
+
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });

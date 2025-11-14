@@ -1,0 +1,14 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Task",
+  "tool_input": {
+    "description": "test task",
+    "prompt": "What is 2+2?",
+    "subagent_type": "general-purpose",
+    "model": "haiku"
+  }
+}

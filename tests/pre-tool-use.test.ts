@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { preToolUseInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -11,6 +11,7 @@ Deno.test("preToolUse - blocks Write tool", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     tool_name: "Write",
     tool_input: {
       file_path: "/tmp/test.txt",
@@ -18,13 +19,17 @@ Deno.test("preToolUse - blocks Write tool", async () => {
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    hookSpecificOutput: {
-      permissionDecision: "deny",
-      permissionDecisionReason: "Write operations are blocked in this test",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "deny",
+        permissionDecisionReason: "Write operations are blocked in this test",
+      },
     },
   });
 });
@@ -35,19 +40,24 @@ Deno.test("preToolUse - allows Read tool", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     tool_name: "Read",
     tool_input: {
       file_path: "/tmp/test.txt",
     },
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    hookSpecificOutput: {
-      permissionDecision: "allow",
-      permissionDecisionReason: "Tool is allowed",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "allow",
+        permissionDecisionReason: "Tool is allowed",
+      },
     },
   });
 });

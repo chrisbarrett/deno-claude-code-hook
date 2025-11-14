@@ -9,6 +9,14 @@
 import { z } from "zod";
 import { postTool, preTool } from "./tools.ts";
 
+/** Current permission mode. */
+export const permissionMode = z.enum([
+  "default",
+  "plan",
+  "acceptEdits",
+  "bypassPermissions",
+]);
+
 /** Attributes common to all input payloads.
  */
 export const genericInput = z.object({
@@ -22,15 +30,6 @@ export const genericInput = z.object({
 
   /** The current working directory when the hook is invoked */
   cwd: z.string(),
-
-  /** Current permission mode.
-
-      @deprecated Appears not to be present in real payloads despite being
-      documented.
-   */
-  permission_mode: z
-    .enum(["default", "plan", "acceptEdits", "bypassPermissions"])
-    .optional(),
 });
 
 /** Attributes common to all output payloads.
@@ -73,6 +72,8 @@ export const genericOutput = z
 export const preToolUseInput = genericInput
   .extend({
     hook_event_name: z.literal("PreToolUse"),
+    /** Current permission mode. */
+    permission_mode: permissionMode,
   })
   .and(preTool);
 
@@ -113,6 +114,8 @@ export const preToolUseOutput = genericOutput.and(
 export const postToolUseInput = genericInput
   .extend({
     hook_event_name: z.literal("PostToolUse"),
+    /** Current permission mode. */
+    permission_mode: permissionMode,
   })
   .and(postTool);
 
@@ -156,6 +159,8 @@ export const notificationOutput = genericOutput;
 
 export const userPromptSubmitInput = genericInput.extend({
   hook_event_name: z.literal("UserPromptSubmit"),
+  /** Current permission mode. */
+  permission_mode: permissionMode,
 
   /** The prompt submitted by the user. */
   prompt: z.string(),
@@ -189,6 +194,8 @@ export const userPromptSubmitOutput = genericOutput.and(
 
 export const stopInput = genericInput.extend({
   hook_event_name: z.literal("Stop"),
+  /** Current permission mode. */
+  permission_mode: permissionMode,
 
   /** `true` when Claude Code is already continuing as a result of a stop
        hook.

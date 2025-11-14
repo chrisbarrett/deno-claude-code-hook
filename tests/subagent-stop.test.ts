@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { subagentStopInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -14,12 +14,15 @@ Deno.test("subagentStop - blocks stop when hook is not active", async () => {
     stop_hook_active: false,
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    decision: "block",
-    reason: "Please provide a summary of completed work",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "block",
+      reason: "Please provide a summary of completed work",
+    },
   });
 });
 
@@ -32,10 +35,13 @@ Deno.test("subagentStop - allows stop when hook is already active", async () => 
     stop_hook_active: true,
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });

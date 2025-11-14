@@ -1,0 +1,18 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "/tmp/test-write-output.txt",
+    "content": "test data"
+  },
+  "tool_response": {
+    "type": "create",
+    "filePath": "/tmp/test-write-output.txt",
+    "content": "test data",
+    "structuredPatch": []
+  }
+}

@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { userPromptSubmitInput } from "../schemas/hooks.ts";
 import {
@@ -17,15 +17,19 @@ Deno.test("userPromptSubmit - blocks dangerous prompts", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     prompt: "Delete production database",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    decision: "block",
-    reason: "Dangerous operations blocked in production environment",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "block",
+      reason: "Dangerous operations blocked in production environment",
+    },
   });
 });
 
@@ -35,17 +39,22 @@ Deno.test("userPromptSubmit - adds context for test prompts", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     prompt: "Help me write a test for the login function",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    decision: "allow",
-    hookSpecificOutput: {
-      additionalContext:
-        "You are working on tests. Prioritize test-related suggestions.",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+      hookSpecificOutput: {
+        hookEventName: "UserPromptSubmit",
+        additionalContext:
+          "You are working on tests. Prioritize test-related suggestions.",
+      },
     },
   });
 });
@@ -56,13 +65,17 @@ Deno.test("userPromptSubmit - allows normal prompts", async () => {
     session_id: "test-session",
     transcript_path: "/tmp/transcript.json",
     cwd: "/tmp",
+    permission_mode: "acceptEdits",
     prompt: "Refactor this code",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
-    decision: "allow",
+  expect(result).toMatchObject({
+    status: 0,
+    stdout: {
+      suppressOutput: false,
+      decision: "allow",
+    },
   });
 });

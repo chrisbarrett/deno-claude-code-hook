@@ -1,0 +1,30 @@
+{
+  "session_id": "test-session-id",
+  "transcript_path": "/test/project/.claude/transcripts/test-session.json",
+  "cwd": "/test/project",
+  "permission_mode": "bypassPermissions",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Grep",
+  "tool_input": {
+    "pattern": "export"
+  },
+  "tool_response": {
+    "mode": "files_with_matches",
+    "filenames": [
+      "/test/project/tests/inputs/PreToolUse.Grep.json",
+      "/test/project/scripts/gen-hook-inputs.sh",
+      "/test/project/tests/inputs/__snapshots__/inputs.test.ts.snap",
+      "/test/project/schemas/tools.ts",
+      "/test/project/schemas/hooks.ts",
+      "/test/project/deno.json",
+      "/test/project/mod.ts",
+      "/test/project/.beads/.gitignore",
+      "/test/project/testing.ts",
+      "/test/project/define-hook.ts",
+      "/test/project/mod.test.ts",
+      "/test/project/env.ts",
+      "/test/project/.beads/metadata.json"
+    ],
+    "numFiles": 13
+  }
+}

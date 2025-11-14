@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { sessionEndInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -14,10 +14,12 @@ Deno.test("sessionEnd - handles clear reason", async () => {
     reason: "clear",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  // SessionEnd hooks typically don't return output
-  assertEquals(output, undefined);
+  // SessionEnd hooks typically don't return JSON output
+  expect(result).toMatchObject({
+    status: 0,
+  });
 });
 
 Deno.test("sessionEnd - handles logout reason", async () => {
@@ -29,10 +31,12 @@ Deno.test("sessionEnd - handles logout reason", async () => {
     reason: "logout",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  // SessionEnd hooks typically don't return output
-  assertEquals(output, undefined);
+  // SessionEnd hooks typically don't return JSON output
+  expect(result).toMatchObject({
+    status: 0,
+  });
 });
 
 Deno.test("sessionEnd - handles exit reason", async () => {
@@ -44,8 +48,10 @@ Deno.test("sessionEnd - handles exit reason", async () => {
     reason: "exit",
   };
 
-  const output = await testHook(hookPath, input);
+  const result = await testHook(hookPath, input);
 
-  // SessionEnd hooks typically don't return output
-  assertEquals(output, undefined);
+  // SessionEnd hooks typically don't return JSON output
+  expect(result).toMatchObject({
+    status: 0,
+  });
 });
