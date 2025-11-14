@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { notificationInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -17,5 +17,5 @@ Deno.test("notification - processes notification message", async () => {
   const output = await testHook(hookPath, input);
 
   // Notification hooks typically don't return output
-  assertEquals(output, undefined);
+  expect(output).toBeUndefined();
 });

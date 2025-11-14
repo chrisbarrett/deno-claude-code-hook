@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { sessionEndInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -17,7 +17,7 @@ Deno.test("sessionEnd - handles clear reason", async () => {
   const output = await testHook(hookPath, input);
 
   // SessionEnd hooks typically don't return output
-  assertEquals(output, undefined);
+  expect(output).toBeUndefined();
 });
 
 Deno.test("sessionEnd - handles logout reason", async () => {
@@ -32,7 +32,7 @@ Deno.test("sessionEnd - handles logout reason", async () => {
   const output = await testHook(hookPath, input);
 
   // SessionEnd hooks typically don't return output
-  assertEquals(output, undefined);
+  expect(output).toBeUndefined();
 });
 
 Deno.test("sessionEnd - handles exit reason", async () => {
@@ -47,5 +47,5 @@ Deno.test("sessionEnd - handles exit reason", async () => {
   const output = await testHook(hookPath, input);
 
   // SessionEnd hooks typically don't return output
-  assertEquals(output, undefined);
+  expect(output).toBeUndefined();
 });

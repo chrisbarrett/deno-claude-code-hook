@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { preCompactInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -17,7 +17,7 @@ Deno.test("preCompact - handles auto compaction", async () => {
   const output = await testHook(hookPath, input);
 
   // PreCompact hooks typically don't return output
-  assertEquals(output, undefined);
+  expect(output).toBeUndefined();
 });
 
 Deno.test("preCompact - handles manual compaction with instructions", async () => {
@@ -33,7 +33,7 @@ Deno.test("preCompact - handles manual compaction with instructions", async () =
   const output = await testHook(hookPath, input);
 
   // PreCompact hooks typically don't return output
-  assertEquals(output, undefined);
+  expect(output).toBeUndefined();
 });
 
 Deno.test("preCompact - handles manual compaction without instructions", async () => {
@@ -49,5 +49,5 @@ Deno.test("preCompact - handles manual compaction without instructions", async (
   const output = await testHook(hookPath, input);
 
   // PreCompact hooks typically don't return output
-  assertEquals(output, undefined);
+  expect(output).toBeUndefined();
 });

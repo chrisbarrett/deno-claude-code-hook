@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { sessionStartInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -16,8 +16,8 @@ Deno.test("sessionStart - handles startup source", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     hookSpecificOutput: {
       additionalContext: "Fresh session started",
     },
@@ -35,8 +35,8 @@ Deno.test("sessionStart - handles resume source", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     hookSpecificOutput: {
       additionalContext: "Resuming previous session",
     },
@@ -54,8 +54,8 @@ Deno.test("sessionStart - handles clear source", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     hookSpecificOutput: {
       additionalContext: "Session cleared, starting fresh",
     },
@@ -73,8 +73,8 @@ Deno.test("sessionStart - handles compact source", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     hookSpecificOutput: {
       additionalContext: "Session restarted after compaction",
     },

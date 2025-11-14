@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { stopInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -17,8 +17,8 @@ Deno.test("stop - blocks stop when hook is not active", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "block",
     reason: "Please verify the changes before stopping",
   });
@@ -36,8 +36,8 @@ Deno.test("stop - allows stop when hook is already active", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "allow",
   });
 });

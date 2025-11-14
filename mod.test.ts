@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { expect } from "@std/expect";
 import { persistEnvVar } from "./mod.ts";
 
 // Helper to set up a temporary env file
@@ -24,7 +24,7 @@ Deno.test("persistEnvVar: writes valid environment variable", async () => {
     await persistEnvVar("TEST_VAR", "test_value");
 
     const content = await Deno.readTextFile(envFile);
-    assertEquals(content, "export TEST_VAR='test_value'\n");
+    expect(content).toEqual("export TEST_VAR='test_value'\n");
   });
 });
 
@@ -34,7 +34,7 @@ Deno.test("persistEnvVar: escapes single quotes correctly", async () => {
 
     const content = await Deno.readTextFile(envFile);
     // Should produce: export TEST_VAR='it'\''s a test'
-    assertEquals(content, "export TEST_VAR='it'\\''s a test'\n");
+    expect(content).toEqual("export TEST_VAR='it'\\''s a test'\n");
   });
 });
 
@@ -45,8 +45,7 @@ Deno.test("persistEnvVar: handles special characters in value", async () => {
 
     const content = await Deno.readTextFile(envFile);
     // Single quotes protect everything except single quotes themselves
-    assertEquals(
-      content,
+    expect(content).toEqual(
       "export TEST_VAR='$VAR `cmd` \"quoted\" \\ newline\n tab\t'\n",
     );
   });
@@ -59,8 +58,7 @@ Deno.test("persistEnvVar: appends multiple variables", async () => {
     await persistEnvVar("VAR3", "value3");
 
     const content = await Deno.readTextFile(envFile);
-    assertEquals(
-      content,
+    expect(content).toEqual(
       "export VAR1='value1'\nexport VAR2='value2'\nexport VAR3='value3'\n",
     );
   });
@@ -70,9 +68,7 @@ Deno.test(
   "persistEnvVar: rejects variable name starting with digit",
   async () => {
     await withTempEnvFile(async () => {
-      await assertRejects(
-        async () => await persistEnvVar("123VAR", "value"),
-        Error,
+      await expect(persistEnvVar("123VAR", "value")).rejects.toThrow(
         "must match pattern",
       );
     });
@@ -81,9 +77,7 @@ Deno.test(
 
 Deno.test("persistEnvVar: rejects variable name with hyphen", async () => {
   await withTempEnvFile(async () => {
-    await assertRejects(
-      async () => await persistEnvVar("MY-VAR", "value"),
-      Error,
+    await expect(persistEnvVar("MY-VAR", "value")).rejects.toThrow(
       "must match pattern",
     );
   });
@@ -91,9 +85,7 @@ Deno.test("persistEnvVar: rejects variable name with hyphen", async () => {
 
 Deno.test("persistEnvVar: rejects variable name with space", async () => {
   await withTempEnvFile(async () => {
-    await assertRejects(
-      async () => await persistEnvVar("MY VAR", "value"),
-      Error,
+    await expect(persistEnvVar("MY VAR", "value")).rejects.toThrow(
       "must match pattern",
     );
   });
@@ -101,9 +93,7 @@ Deno.test("persistEnvVar: rejects variable name with space", async () => {
 
 Deno.test("persistEnvVar: rejects empty variable name", async () => {
   await withTempEnvFile(async () => {
-    await assertRejects(
-      async () => await persistEnvVar("", "value"),
-      Error,
+    await expect(persistEnvVar("", "value")).rejects.toThrow(
       "must match pattern",
     );
   });
@@ -120,12 +110,12 @@ Deno.test("persistEnvVar: accepts valid variable names", async () => {
 
     const content = await Deno.readTextFile(envFile);
     const lines = content.trim().split("\n");
-    assertEquals(lines.length, 5);
-    assertEquals(lines[0], "export VAR='value1'");
-    assertEquals(lines[1], "export _VAR='value2'");
-    assertEquals(lines[2], "export VAR123='value3'");
-    assertEquals(lines[3], "export VAR_NAME='value4'");
-    assertEquals(lines[4], "export _123='value5'");
+    expect(lines.length).toEqual(5);
+    expect(lines[0]).toEqual("export VAR='value1'");
+    expect(lines[1]).toEqual("export _VAR='value2'");
+    expect(lines[2]).toEqual("export VAR123='value3'");
+    expect(lines[3]).toEqual("export VAR_NAME='value4'");
+    expect(lines[4]).toEqual("export _123='value5'");
   });
 });
 
@@ -134,7 +124,7 @@ Deno.test("persistEnvVar: handles empty value", async () => {
     await persistEnvVar("EMPTY_VAR", "");
 
     const content = await Deno.readTextFile(envFile);
-    assertEquals(content, "export EMPTY_VAR=''\n");
+    expect(content).toEqual("export EMPTY_VAR=''\n");
   });
 });
 
@@ -145,8 +135,7 @@ Deno.test(
       await persistEnvVar("TEST_VAR", "it's 'quoted' here's more");
 
       const content = await Deno.readTextFile(envFile);
-      assertEquals(
-        content,
+      expect(content).toEqual(
         "export TEST_VAR='it'\\''s '\\''quoted'\\'' here'\\''s more'\n",
       );
     });

@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { userPromptSubmitInput } from "../schemas/hooks.ts";
 import {
@@ -23,8 +23,8 @@ Deno.test("userPromptSubmit - blocks dangerous prompts", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "block",
     reason: "Dangerous operations blocked in production environment",
   });
@@ -42,8 +42,8 @@ Deno.test("userPromptSubmit - adds context for test prompts", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "allow",
     hookSpecificOutput: {
       additionalContext:
@@ -64,8 +64,8 @@ Deno.test("userPromptSubmit - allows normal prompts", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "allow",
   });
 });

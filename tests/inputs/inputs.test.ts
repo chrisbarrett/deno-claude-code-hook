@@ -10,7 +10,7 @@
  *   deno test --update
  */
 
-import { assertEquals } from "@std/assert";
+import { expect } from "@std/expect";
 import { assertSnapshot } from "@std/testing/snapshot";
 import { dirname, fromFileUrl, join } from "@std/path";
 import * as schemas from "../../schemas/hooks.ts";
@@ -32,11 +32,7 @@ async function testHookInput<T extends z.ZodTypeAny>(
   // For tool-specific files like "PreToolUse.Read", extract base hook name
   const baseHookName = filename.split(".")[0];
 
-  assertEquals(
-    result.hook_event_name,
-    baseHookName,
-    `hook_event_name mismatch in ${filename}.json`,
-  );
+  expect(result.hook_event_name).toEqual(baseHookName);
 
   await assertSnapshot(t, result);
 }

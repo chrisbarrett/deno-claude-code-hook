@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { preToolUseInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -21,8 +21,8 @@ Deno.test("preToolUse - blocks Write tool", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     hookSpecificOutput: {
       permissionDecision: "deny",
       permissionDecisionReason: "Write operations are blocked in this test",
@@ -45,8 +45,8 @@ Deno.test("preToolUse - allows Read tool", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     hookSpecificOutput: {
       permissionDecision: "allow",
       permissionDecisionReason: "Tool is allowed",

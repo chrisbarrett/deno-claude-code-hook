@@ -1,4 +1,4 @@
-import { assert, assertObjectMatch } from "@std/assert";
+import { expect } from "@std/expect";
 import type { z } from "zod";
 import type { postToolUseInput } from "../schemas/hooks.ts";
 import { resolveHookPath, testHook } from "../testing.ts";
@@ -26,8 +26,8 @@ Deno.test("postToolUse - adds context for interrupted bash command", async () =>
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "allow",
     hookSpecificOutput: {
       additionalContext: "Command was interrupted",
@@ -56,8 +56,8 @@ Deno.test("postToolUse - allows successful bash command", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "allow",
   });
 });
@@ -86,8 +86,8 @@ Deno.test("postToolUse - handles real Bash payload format", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "allow",
   });
 });
@@ -118,8 +118,8 @@ Deno.test("postToolUse - handles real Read payload format", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "allow",
   });
 });
@@ -150,8 +150,8 @@ Deno.test("postToolUse - handles real Glob payload format", async () => {
 
   const output = await testHook(hookPath, input);
 
-  assert(output);
-  assertObjectMatch(output, {
+  expect(output).toBeDefined();
+  expect(output).toMatchObject({
     decision: "allow",
   });
 });
