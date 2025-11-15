@@ -10,7 +10,7 @@
  * was user-initiated via `/compact`.
  *
  * ```typescript
- * #!/usr/bin/env -S deno run --allow-read --allow-run
+ * #!/usr/bin/env -S deno run --allow-env --allow-read --allow-write --allow-run
  * import { preCompact } from "jsr:@chrisbarrett/claude-code-hook";
  * import $ from "jsr:@david/dax";
  *
@@ -75,6 +75,12 @@
  * As a convenience, if stdout or stderr happen to start with a '{' they will be
  * parsed as JSON objects, making it convenient to write object matchers against
  * your hook output.
+ *
+ * ## Logging
+ *
+ * The library provides structured logging via [LogTape](https://jsr.io/@logtape/logtape).
+ * Logs are written to `~/.claude/hooks.log` (or `/tmp/claude/hooks.log` if `HOME`
+ * is not set) and to stderr.
  *
  * ## Environment Variables
  *
