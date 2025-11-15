@@ -4,7 +4,7 @@ import { concat } from "@std/bytes";
 import { z } from "zod";
 
 import { stdinMaxBufLen } from "./env.ts";
-import { getLogger } from "./logging.ts";
+import { configureLogging, getLogger } from "./logging.ts";
 
 /** A hook handler function, taking the validated hook input, doing work, and
  * then returning a value of the output structure for the hook type for claude
@@ -31,7 +31,9 @@ export const defineHook =
     outputSchema: Out,
   ): HookDef<In, Out> =>
   async (fn) => {
-    const logger = await getLogger("main");
+    await configureLogging();
+
+    const logger = getLogger("main");
     logger.info`Execution started`;
 
     try {
@@ -46,7 +48,6 @@ export const defineHook =
           cause,
         });
       }
-
       const input = await inputSchema.parseAsync(json).catch((cause) => {
         const errorMessage =
           cause instanceof z.ZodError
@@ -109,12 +110,12 @@ export const defineHook =
   };
 
 const readStdin = async (): Promise<string> => {
-  const logger = await getLogger("readStdin");
+  const logger = getLogger("readStdin");
 
   const chunks: Uint8Array[] = [];
   let totalBytes = 0;
 
-  const bufLimit = await stdinMaxBufLen();
+  const bufLimit = stdinMaxBufLen();
   logger.debug("Reading stdin. {*}", { bufLimit });
 
   for await (const chunk of Deno.stdin.readable) {

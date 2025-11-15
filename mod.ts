@@ -495,7 +495,7 @@ export const persistEnvVar = async (
   // Replace ' with '\'' (end quote, escaped quote, start quote)
   const escapedValue = value.replace(/'/g, "'\\''");
 
-  const file = claudeEnvFile();
+  const file = await claudeEnvFile();
   const encoder = new TextEncoder();
   const line = encoder.encode(`export ${parsedName}='${escapedValue}'\n`);
 

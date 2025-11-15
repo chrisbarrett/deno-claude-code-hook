@@ -6,8 +6,7 @@ const libCategory = "@chrisbarrett/claude-code-hook";
 import { logFile } from "./env.ts";
 
 /** Get a logger with the library category set for use in a hook. */
-export const getLogger = async (...categories: string[]) => {
-  await configureLogging();
+export const getLogger = (...categories: string[]) => {
   return logtape.getLogger([libCategory, ...categories]);
 };
 
