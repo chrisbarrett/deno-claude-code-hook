@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
+import type { Logger } from "@logtape/logtape";
 import { assert } from "@std/assert";
 import { concat } from "@std/bytes";
 import { z } from "zod";
@@ -10,15 +11,27 @@ import { configureLogging, getLogger } from "./logging.ts";
  * then returning a value of the output structure for the hook type for claude
  * to interpret.
  */
-export type HookDef<Input, Output> = (
-  input: HookFn<Input, Output>,
+export type HookDef<Input, Output, ExtraCtx = unknown> = (
+  input: HookFn<Input, Output, ExtraCtx>,
 ) => Promise<void>;
 
-type HookFn<Input, Output> = (
+type HookFn<Input, Output, ExtraCtx> = (
   _: z.output<Input>,
+  ctx: Context & ExtraCtx,
 ) => PromiseOrImmediate<void | z.input<Output>>;
 
 type PromiseOrImmediate<T> = T | Promise<T>;
+
+/** Additional stuff available within a hook implementation. */
+export type Context = {
+  /** A child logger that will output to stderr and the log file.
+   *
+   * The log file can be set via `CLAUDE_CODE_HOOK_LOG_FILE`. If unset, logs are
+   * written to `~/.claude/hooks.log` (or `/tmp/claude/hooks.log` if `HOME` is
+   * not set).
+   */
+  logger: Logger;
+};
 
 /** Define a hook function that reads JSON from stdin, validates with the given
     Zod schema, then delegates to a given implementation function. The
@@ -26,10 +39,15 @@ type PromiseOrImmediate<T> = T | Promise<T>;
     which will be validated.
  */
 export const defineHook =
-  <In extends z.ZodType, Out extends z.ZodType>(
+  <
+    In extends z.ZodType,
+    Out extends z.ZodType,
+    CtxExtra extends Record<string, any>,
+  >(
     inputSchema: In,
     outputSchema: Out,
-  ): HookDef<In, Out> =>
+    extraContext: CtxExtra,
+  ): HookDef<In, Out, CtxExtra> =>
   async (fn) => {
     await configureLogging();
 
@@ -72,7 +90,12 @@ export const defineHook =
 
       logger.debug("Input parsed successfully. {*}", { input });
 
-      const value = await Promise.resolve(fn(input));
+      const value = await Promise.resolve(
+        fn(input, {
+          logger: logger.getChild("handler"),
+          ...extraContext,
+        }),
+      );
 
       const result = await outputSchema
         .optional()

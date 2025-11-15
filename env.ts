@@ -80,3 +80,33 @@ export const logFile = () => {
   logger.debug("Returing log file path: {*}", { result });
   return result;
 };
+
+/**
+ * Persist an environment variable to {@link CLAUDE_ENV_FILE}.
+ *
+ * Makes the environment variable available in all subsequent bash commands
+ * executed by Claude Code during the session.
+ */
+export const persistEnvVar = async (
+  name: string,
+  value: string,
+): Promise<void> => {
+  // Validate environment variable name per POSIX spec
+  // Must start with letter or underscore, followed by letters, digits, or underscores
+  const parsedName = z
+    .string()
+    .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/)
+    .describe("Environment variable name")
+    .parse(name);
+
+  // Escape value for safe use in single-quoted shell strings
+  // Single quotes are literal in bash - only need to escape single quotes themselves
+  // Replace ' with '\'' (end quote, escaped quote, start quote)
+  const escapedValue = value.replace(/'/g, "'\\''");
+
+  const file = claudeEnvFile();
+  const encoder = new TextEncoder();
+  const line = encoder.encode(`export ${parsedName}='${escapedValue}'\n`);
+
+  await Deno.writeFile(file, line, { append: true, create: true });
+};

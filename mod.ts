@@ -76,9 +76,22 @@
  * parsed as JSON objects, making it convenient to write object matchers against
  * your hook output.
  *
- * ## Logging
+ * ## Logging & Debugging
  *
  * The library provides structured logging via [LogTape](https://jsr.io/@logtape/logtape).
+ *
+ * A logger is passed to your handlers via the `context` parameter--you should
+ * use that rather than logging to the console directly, since Claude Code uses
+ * stdout as its comms channel. :)
+ *
+ * ```typescript
+ * import { sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
+ *
+ * sessionStart(async (input, ctx) => {
+ *   ctx.logger.info("Hello, world!")
+ * });
+ * ```
+ *
  * Logs are written to `~/.claude/hooks.log` (or `/tmp/claude/hooks.log` if `HOME`
  * is not set) and to stderr.
  *
@@ -98,13 +111,14 @@
  * Available only in `SessionStart` hooks. Path to a file where environment
  * variables can be persisted for subsequent bash commands.
  *
- * Use the {@link persistEnvVar} helper to write to this file:
+ * You can use the {@link persistEnvVar} helper in {@link sessionStart}'s
+ * context to write to this file:
  *
  * ```typescript
- * import { persistEnvVar, sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
+ * import { sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
  *
- * sessionStart(async (input) => {
- *   await persistEnvVar("MY_API_KEY", "secret-value");
+ * sessionStart(async (input, ctx) => {
+ *   await ctx.persistEnvVar("MY_API_KEY", "secret-value");
  *   // MY_API_KEY now available in all subsequent bash commands
  * });
  * ```
@@ -120,10 +134,9 @@
  * @module
  * @see {@link https://code.claude.com/docs/en/hooks | Claude Code Hooks Documentation}
  */
-import { z } from "zod";
 import * as schemas from "./schemas/hooks.ts";
 import { defineHook, type HookDef } from "./define-hook.ts";
-import { claudeEnvFile } from "./env.ts";
+import { persistEnvVar } from "./env.ts";
 
 /**
  * Runs after Claude creates tool parameters and before processing the tool call.
@@ -192,7 +205,7 @@ import { claudeEnvFile } from "./env.ts";
 export const preToolUse: HookDef<
   typeof schemas.preToolUseInput,
   typeof schemas.preToolUseOutput
-> = defineHook(schemas.preToolUseInput, schemas.preToolUseOutput);
+> = defineHook(schemas.preToolUseInput, schemas.preToolUseOutput, {});
 
 /**
  * Runs immediately after a tool completes successfully.
@@ -237,7 +250,7 @@ export const preToolUse: HookDef<
 export const postToolUse: HookDef<
   typeof schemas.postToolUseInput,
   typeof schemas.postToolUseOutput
-> = defineHook(schemas.postToolUseInput, schemas.postToolUseOutput);
+> = defineHook(schemas.postToolUseInput, schemas.postToolUseOutput, {});
 
 /**
  * Runs when Claude Code sends notifications.
@@ -257,7 +270,7 @@ export const postToolUse: HookDef<
 export const notification: HookDef<
   typeof schemas.notificationInput,
   typeof schemas.notificationOutput
-> = defineHook(schemas.notificationInput, schemas.notificationOutput);
+> = defineHook(schemas.notificationInput, schemas.notificationOutput, {});
 
 /**
  * Runs when the user submits a prompt, before Claude processes it.
@@ -310,14 +323,18 @@ export const notification: HookDef<
 export const userPromptSubmit: HookDef<
   typeof schemas.userPromptSubmitInput,
   typeof schemas.userPromptSubmitOutput
-> = defineHook(schemas.userPromptSubmitInput, schemas.userPromptSubmitOutput);
+> = defineHook(
+  schemas.userPromptSubmitInput,
+  schemas.userPromptSubmitOutput,
+  {},
+);
 
 /** A general-purpose hook that can be used for any event.
  */
 export const generic: HookDef<
   typeof schemas.genericInput,
   typeof schemas.genericOutput
-> = defineHook(schemas.genericInput, schemas.genericOutput);
+> = defineHook(schemas.genericInput, schemas.genericOutput, {});
 
 /**
  * Runs when the main Claude Code agent has finished responding. The output
@@ -332,7 +349,7 @@ export const generic: HookDef<
 export const stop: HookDef<
   typeof schemas.stopInput,
   typeof schemas.stopOutput
-> = defineHook(schemas.stopInput, schemas.stopOutput);
+> = defineHook(schemas.stopInput, schemas.stopOutput, {});
 
 /**
  * Runs when a Claude Code subagent (Task tool call) has finished responding.
@@ -347,7 +364,7 @@ export const stop: HookDef<
 export const subagentStop: HookDef<
   typeof schemas.subagentStopInput,
   typeof schemas.subagentStopOutput
-> = defineHook(schemas.subagentStopInput, schemas.subagentStopOutput);
+> = defineHook(schemas.subagentStopInput, schemas.subagentStopOutput, {});
 
 /**
  * Runs before Claude Code is about to run a compact operation.
@@ -361,7 +378,7 @@ export const subagentStop: HookDef<
 export const preCompact: HookDef<
   typeof schemas.preCompactInput,
   typeof schemas.preCompactOutput
-> = defineHook(schemas.preCompactInput, schemas.preCompactOutput);
+> = defineHook(schemas.preCompactInput, schemas.preCompactOutput, {});
 
 /**
  * Runs when Claude Code starts a new session or resumes an existing session.
@@ -402,9 +419,9 @@ export const preCompact: HookDef<
  * ```typescript
  * import { persistEnvVar, sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
  *
- * sessionStart(async (input) => {
- *   await persistEnvVar("NODE_ENV", "development");
- *   await persistEnvVar("API_URL", "https://staging.example.com");
+ * sessionStart(async (input, ctx) => {
+ *   await ctx.persistEnvVar("NODE_ENV", "development");
+ *   await ctx.persistEnvVar("API_URL", "https://staging.example.com");
  *
  *   return {
  *     hookSpecificOutput: {
@@ -420,10 +437,8 @@ export const preCompact: HookDef<
  * import { sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
  *
  * sessionStart(async (input) => {
- *   // Fetch open issues from tracking system
- *   const response = await fetch("https://api.example.com/issues?status=open");
- *   const issues = await response.json();
- *
+ *   const client = new IssueTrackerClient(Deno.env.get("ISSUE_TRACKER_AUTH_TOKEN"));
+ *   const response = await client.getIssues()
  *   const issueList = issues.map((i) => `- ${i.id}: ${i.title}`).join("\n");
  *
  *   return {
@@ -437,76 +452,36 @@ export const preCompact: HookDef<
  */
 export const sessionStart: HookDef<
   typeof schemas.sessionStartInput,
-  typeof schemas.sessionStartOutput
-> = defineHook(schemas.sessionStartInput, schemas.sessionStartOutput);
-
-/**
- * Persist an environment variable to {@link CLAUDE_ENV_FILE}.
- *
- * Makes the environment variable available in all subsequent bash commands
- * executed by Claude Code during the session.
- *
- * **Permissions required:**
- * - `--allow-env` - to read CLAUDE_ENV_FILE path
- * - `--allow-write` - to write to the environment file
- *
- * **Only available in `SessionStart` hooks.**
- *
- * @param name - Environment variable name (must match POSIX: [a-zA-Z_][a-zA-Z0-9_]*)
- * @param value - Environment variable value (automatically escaped for shell safety)
- *
- * @throws {Error} If name is invalid or CLAUDE_ENV_FILE is not set
- *
- * @example Basic usage
- * ```typescript
- * import { persistEnvVar, sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
- *
- * sessionStart(async (input) => {
- *   await persistEnvVar("DATABASE_URL", "postgresql://localhost/mydb");
- *   await persistEnvVar("LOG_LEVEL", "debug");
- * });
- * ```
- *
- * @example Conditional environment setup
- * ```typescript
- * import { persistEnvVar, sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
- *
- * sessionStart(async (input) => {
- *   const isProduction = input.workingDirectory.includes("/production/");
- *
- *   if (isProduction) {
- *     await persistEnvVar("NODE_ENV", "production");
- *     await persistEnvVar("API_URL", "https://api.example.com");
- *   } else {
- *     await persistEnvVar("NODE_ENV", "development");
- *     await persistEnvVar("API_URL", "https://staging.example.com");
- *   }
- * });
- * ```
- */
-export const persistEnvVar = async (
-  name: string,
-  value: string,
-): Promise<void> => {
-  // Validate environment variable name per POSIX spec
-  // Must start with letter or underscore, followed by letters, digits, or underscores
-  const parsedName = z
-    .string()
-    .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/)
-    .describe("Environment variable name")
-    .parse(name);
-
-  // Escape value for safe use in single-quoted shell strings
-  // Single quotes are literal in bash - only need to escape single quotes themselves
-  // Replace ' with '\'' (end quote, escaped quote, start quote)
-  const escapedValue = value.replace(/'/g, "'\\''");
-
-  const file = await claudeEnvFile();
-  const encoder = new TextEncoder();
-  const line = encoder.encode(`export ${parsedName}='${escapedValue}'\n`);
-
-  await Deno.writeFile(file, line, { append: true, create: true });
-};
+  typeof schemas.sessionStartOutput,
+  {
+    /**
+     * Persist an environment variable to {@link CLAUDE_ENV_FILE}.
+     *
+     * Makes the environment variable available in all subsequent bash commands
+     * executed by Claude Code during the session.
+     *
+     * **Only available in `SessionStart` hooks.**
+     *
+     * @param name - Environment variable name (must match POSIX: [a-zA-Z_][a-zA-Z0-9_]*)
+     * @param value - Environment variable value (automatically escaped for shell safety)
+     *
+     * @throws {Error} If name is invalid or CLAUDE_ENV_FILE is not set
+     *
+     * @example Basic usage
+     * ```typescript
+     * import { sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
+     *
+     * sessionStart(async (input, ctx) => {
+     *   await ctx.persistEnvVar("DATABASE_URL", "postgresql://localhost/mydb");
+     *   await ctx.persistEnvVar("LOG_LEVEL", "debug");
+     * });
+     * ```
+     */
+    persistEnvVar: typeof persistEnvVar;
+  }
+> = defineHook(schemas.sessionStartInput, schemas.sessionStartOutput, {
+  persistEnvVar,
+});
 
 /**
  * Runs when a Claude Code session ends. Useful for cleanup tasks, logging
@@ -519,4 +494,4 @@ export const persistEnvVar = async (
 export const sessionEnd: HookDef<
   typeof schemas.sessionEndInput,
   typeof schemas.sessionEndOutput
-> = defineHook(schemas.sessionEndInput, schemas.sessionEndOutput);
+> = defineHook(schemas.sessionEndInput, schemas.sessionEndOutput, {});
