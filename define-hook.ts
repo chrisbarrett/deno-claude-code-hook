@@ -1,8 +1,10 @@
-import { assert } from "@std/assert/assert";
-import { concat } from "@std/bytes/concat";
+// deno-lint-ignore-file no-explicit-any
+import { assert } from "@std/assert";
+import { concat } from "@std/bytes";
 import { z } from "zod";
 
 import { stdinMaxBufLen } from "./env.ts";
+import { getLogger } from "./logging.ts";
 
 /** A hook handler function, taking the validated hook input, doing work, and
  * then returning a value of the output structure for the hook type for claude
@@ -29,83 +31,105 @@ export const defineHook =
     outputSchema: Out,
   ): HookDef<In, Out> =>
   async (fn) => {
-    const stdin = await readStdin();
+    const logger = await getLogger("main");
+    logger.info`Execution started`;
 
-    let json;
     try {
-      json = JSON.parse(stdin);
-    } catch (_) {
-      console.error("stdin was not valid JSON");
-      console.error({ rawHookInput: stdin });
-      Deno.exit(1);
-    }
+      const stdin = await readStdin();
 
-    const input = await inputSchema.parseAsync(json).catch((cause) => {
-      const errorMessage =
-        cause instanceof z.ZodError
-          ? z.prettifyError(cause)
-          : (cause as Error).message;
+      let json;
+      try {
+        json = JSON.parse(stdin);
+      } catch (cause) {
+        logger.error("stdin was not valid JSON: {*}", { stdin });
+        throw new Deno.errors.InvalidData("stdin was not valid JSON", {
+          cause,
+        });
+      }
 
-      console.error(`Input validation failed.
-
-Input:
-${stdin}
-
-Errors:
-${errorMessage}`);
-
-      Deno.exit(1);
-    });
-
-    console.error({ parsedHookInput: input });
-
-    const value = await Promise.resolve(fn(input));
-
-    const result = await outputSchema
-      .optional()
-      .parseAsync(value)
-      .catch((cause) => {
+      const input = await inputSchema.parseAsync(json).catch((cause) => {
         const errorMessage =
           cause instanceof z.ZodError
             ? z.prettifyError(cause)
             : (cause as Error).message;
 
-        console.error(
-          `Output validation failed.
-
-Output:
-${JSON.stringify(value)}
-
-Errors:
-${errorMessage}`,
+        logger.error(
+          "Input validation failed:\n{errorMessage}\n\nValue: {value}",
+          {
+            stdin,
+            errorMessage,
+          },
         );
-        Deno.exit(1);
+
+        throw new Deno.errors.InvalidData(
+          `Input validation failed:\n${errorMessage}`,
+          {
+            cause,
+          },
+        );
       });
 
-    console.error({ parsedHookResult: result });
+      logger.debug("Input parsed successfully. {*}", { input });
 
-    if (result !== undefined) {
-      console.log(JSON.stringify(result));
+      const value = await Promise.resolve(fn(input));
+
+      const result = await outputSchema
+        .optional()
+        .parseAsync(value)
+        .catch((cause) => {
+          const errorMessage =
+            cause instanceof z.ZodError
+              ? z.prettifyError(cause)
+              : (cause as Error).message;
+
+          logger.error(
+            "Output validation failed:\n{errorMessage}\n\nValue: {value}",
+            { value, errorMessage },
+          );
+
+          throw new Deno.errors.InvalidData("Output validation failed", {
+            cause,
+          });
+        });
+
+      if (result === undefined) {
+        logger.info`Empty output from handler`;
+      } else {
+        logger.info("Sending output to Claude Code: {*}", { result });
+
+        console.log(JSON.stringify(result));
+      }
+
+      logger.info("Execution complete.");
+    } catch (cause: any) {
+      logger.error(cause.message, { cause });
+      console.error(cause);
+      Deno.exit(1);
     }
   };
 
 const readStdin = async (): Promise<string> => {
+  const logger = await getLogger("readStdin");
+
   const chunks: Uint8Array[] = [];
   let totalBytes = 0;
 
-  const bufLimit = stdinMaxBufLen();
+  const bufLimit = await stdinMaxBufLen();
+  logger.debug("Reading stdin. {*}", { bufLimit });
 
   for await (const chunk of Deno.stdin.readable) {
     totalBytes += chunk.byteLength;
     if (totalBytes > bufLimit) {
-      throw new Error(
-        `stdin exceeded maximum buffer size of ${bufLimit} bytes`,
+      throw new Deno.errors.InvalidData(
+        `stdin exceeded maximum buffer size of ${bufLimit} bytes.`,
       );
     }
     chunks.push(chunk);
   }
 
   assert(totalBytes > 0, "No data was sent over stdin");
+  const result = new TextDecoder().decode(concat(chunks)).trim();
 
-  return new TextDecoder().decode(concat(chunks)).trim();
+  logger.debug("stdin read: {*}", { totalBytes, stdin: result });
+  return result;
 };
