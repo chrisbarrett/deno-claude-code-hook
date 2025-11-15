@@ -61,16 +61,30 @@ export const claudeEnvFile = () => {
 export const logFile = () => {
   const logger = getLogger().getChild(["env", "logFile"]);
 
-  logger.debug("Retrieving HOME");
-  const homeDir = Deno.env.get("HOME");
+  let result;
 
-  let result: string;
-  if (homeDir) {
-    result = path.join(homeDir, ".claude", "hooks.log");
+  logger.debug("Retrieving CLAUDE_CODE_HOOK_LOG_FILE");
+  const value = Deno.env.get("CLAUDE_CODE_HOOK_LOG_FILE");
+  if (value && value.length > 0) {
+    result = value;
+    logger.debug("CLAUDE_CODE_HOOK_LOG_FILE is set to value {value}", {
+      value,
+    });
   } else {
-    result = path.join("/tmp", "claude", "hooks.log");
+    logger.debug(
+      "CLAUDE_CODE_HOOK_LOG_FILE not set; using alternative default path.",
+    );
+
+    const homeDir = Deno.env.get("HOME");
+
+    if (homeDir) {
+      result = path.join(homeDir, ".claude", "hooks.log");
+    } else {
+      result = path.join("/tmp", "claude", "hooks.log");
+    }
   }
 
+  logger.debug("Ensuring parent directories exist");
   Deno.mkdirSync(path.dirname(result), { recursive: true });
 
   logger.debug("Returing log file path: {*}", { result });

@@ -106,6 +106,11 @@
  * export CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN=20971520  # 20 MiB
  * ```
  *
+ * ### CLAUDE_CODE_HOOK_LOG_FILE
+ *
+ * Sets the file path used for logging output. If unset, logs are written to
+ * `~/.claude/hooks.log` (or `/tmp/claude/hooks.log` if `HOME` is not set).
+ *
  * ### CLAUDE_ENV_FILE
  *
  * Available only in `SessionStart` hooks. Path to a file where environment
