@@ -111,8 +111,6 @@
  * - `--allow-write` - file operations (e.g., {@link persistEnvVar})
  * - `--allow-env` - environment variable access
  *
- * The library gracefully handles missing permissions by returning defaults.
- *
  * @module
  * @see {@link https://code.claude.com/docs/en/hooks | Claude Code Hooks Documentation}
  */
@@ -497,7 +495,7 @@ export const persistEnvVar = async (
   // Replace ' with '\'' (end quote, escaped quote, start quote)
   const escapedValue = value.replace(/'/g, "'\\''");
 
-  const file = claudeEnvFile();
+  const file = await claudeEnvFile();
   const encoder = new TextEncoder();
   const line = encoder.encode(`export ${parsedName}='${escapedValue}'\n`);
 
