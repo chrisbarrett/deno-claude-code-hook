@@ -67,9 +67,16 @@ export const logFile = () => {
 
   logger.debug("Retrieving HOME");
   const homeDir = Deno.env.get("HOME");
-  assert(homeDir, "HOME environmentvariable not set");
 
-  const result = path.join(homeDir, ".claude", "hooks.log");
+  let result: string;
+  if (homeDir) {
+    result = path.join(homeDir, ".claude", "hooks.log");
+  } else {
+    result = path.join("/tmp", "claude", "hooks.log");
+  }
+
+  Deno.mkdirSync(path.dirname(result), { recursive: true });
+
   logger.debug("Returing log file path: {*}", { result });
   return result;
 };
