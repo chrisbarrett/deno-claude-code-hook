@@ -6,6 +6,9 @@ Type-safe Deno library for building [Claude Code](https://code.claude.com) hooks
 with runtime validation. Using this lib you can write self-contained hook
 scripts with LSP completions and editor squiggles to guide you.
 
+For the full documentation, check the
+[latest release on JSR](https://jsr.io/@chrisbarrett/claude-code-hook@latest).
+
 ## Quick Start
 
 The example below will teach Claude Code to use the `say` command on macOS to
@@ -63,23 +66,19 @@ started.
 
 ## Permissions
 
-Hooks require explicit Deno permissions. See the
-[Deno permissions documentation](https://docs.deno.com/runtime/fundamentals/security/)
-for more details.
+Hooks require explicit Deno permissions. You'll need at least:
 
-| Permission      | Purpose                                 | Required |
-| --------------- | --------------------------------------- | -------- |
-| `--allow-read`  | Read from stdin                         | Always   |
-| `--allow-write` | File operations (e.g., `persistEnvVar`) | Optional |
-| `--allow-env`   | Access environment variables            | Optional |
-| `--allow-run`   | Execute shell commands (e.g., dax)      | Optional |
-| `--allow-net`   | Network requests (e.g., `fetch`)        | Optional |
+| Permission      | Purpose                                                       |
+| --------------- | ------------------------------------------------------------- |
+| `--allow-read`  | Read JSON sent by Claude Code over stdin                      |
+| `--allow-env`   | Access environment variables for self-configuration           |
+| `--allow-write` | Writing to files (e.g. with `persistEnvVar`), logging to disk |
 
 <!-- prettier-ignore-start -->
 
 > [!TIP]
-> Claude Code passes input via stdin; your hooks will invariably require
-> `--allow-read`. The YOLO setting is `--allow-all`.
+> If you get sick of playing whack-a-mole with Deno permissions, the YOLO
+> setting is `--allow-all`.
 
 <!-- prettier-ignore-end -->
 
@@ -96,7 +95,8 @@ For the full documentation, check the
 import { sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
 import $ from "jsr:@david/dax";
 
-sessionStart(async (input) => {
+sessionStart(async (input, ctx) => {
+  ctx.logger.info("Calling Git to get context information");
   const branch = await $`git branch --show-current`.text();
   const commits = await $`git log -5 --oneline`.text();
 
@@ -137,13 +137,10 @@ preToolUse(async (input) => {
 ### Set Session-Level Environment Variables
 
 ```typescript
-import {
-  persistEnvVar,
-  sessionStart,
-} from "jsr:@chrisbarrett/claude-code-hook";
+import { sessionStart } from "jsr:@chrisbarrett/claude-code-hook";
 
-sessionStart(async (input) => {
-  await persistEnvVar("SOME_SESSION_VARIABLE", "hello from Session Start!");
+sessionStart(async (input, ctx) => {
+  await ctx.persistEnvVar("SOME_SESSION_VARIABLE", "hello from Session Start!");
 });
 ```
 
@@ -157,8 +154,8 @@ types guide you.
 
 ```typescript
 // Void return (no output)
-sessionStart(async (input) => {
-  console.error("Session started");
+sessionStart(async (input, ctx) => {
+  ctx.logger.info("Session started");
   // No return needed
 });
 
@@ -203,12 +200,9 @@ Check the `type` of a tool to get type-safe access to its inputs.
 import { preToolUse } from "jsr:@chrisbarrett/claude-code-hook";
 
 preToolUse(async (input) => {
-  // TypeScript knows the shape based on tool_name
   if (input.type === "Read") {
-    // input.tool_input.file_path is typed
     const path = input.tool_input.file_path;
   } else if (input.type === "Edit") {
-    // input.tool_input has file_path, old_string, new_string
     const { file_path, old_string, new_string } = input.tool_input;
   }
 });
