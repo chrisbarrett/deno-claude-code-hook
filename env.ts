@@ -91,6 +91,10 @@ export const persistEnvVar = async (
   name: string,
   value: string,
 ): Promise<void> => {
+  const logger = getLogger().getChild(["env", "persistEnvVar"]).with({ name });
+
+  logger.debug("Validating env var name: {name}");
+
   // Validate environment variable name per POSIX spec
   // Must start with letter or underscore, followed by letters, digits, or underscores
   const parsedName = z
@@ -104,9 +108,19 @@ export const persistEnvVar = async (
   // Replace ' with '\'' (end quote, escaped quote, start quote)
   const escapedValue = value.replace(/'/g, "'\\''");
 
+  if (escapedValue.length === 0) {
+    logger.warn("Empty value provided for {name}");
+  }
+
   const file = claudeEnvFile();
   const encoder = new TextEncoder();
   const line = encoder.encode(`export ${parsedName}='${escapedValue}'\n`);
 
+  logger.debug("Persisting {name} (value of length {len}) to {file}", {
+    file,
+    len: escapedValue.length,
+  });
+
   await Deno.writeFile(file, line, { append: true, create: true });
+  logger.debug("{name} written to {file}", { file });
 };
