@@ -111,8 +111,6 @@
  * - `--allow-write` - file operations (e.g., {@link persistEnvVar})
  * - `--allow-env` - environment variable access
  *
- * The library gracefully handles missing permissions by returning defaults.
- *
  * @module
  * @see {@link https://code.claude.com/docs/en/hooks | Claude Code Hooks Documentation}
  */
