@@ -6,43 +6,39 @@ import { getLogger } from "./logging.ts";
 /** Returns max stdin buffer size (default 10 MiB). */
 export const stdinMaxBufLen = (): number => {
   const dflt = 10 * 1024 * 1024;
+  const variable = "CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN";
 
   const logger = getLogger().getChild(["env", "stdinMaxBufLen"]).with({
-    variable: "CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN",
+    variable,
+    default: dflt,
   });
 
-  const query = {
-    name: "env",
-    variable: "CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN",
-  } as const;
+  const query = { name: "env", variable } as const;
 
-  logger.trace("Checking permissions. {*}", { query });
+  logger.debug("Checking permissions. {*}", { query });
   const { state } = Deno.permissions.querySync(query);
 
   if (state !== "granted") {
-    logger.trace("Permission denied; returning default. {*}", {
-      query,
-      state,
-      dflt,
-    });
+    logger.debug(
+      "Permission check returned {state}; falling back to default of {default}",
+      { state },
+    );
     return dflt;
   }
 
-  logger.trace("Permission granted. {*}", { query, state });
+  logger.debug("Permission granted. {*}", { query, state });
 
-  const value = Deno.env.get("CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN");
+  const value = Deno.env.get(variable);
   if (value === undefined) {
-    logger.trace("Environment variable not set; returning default. {*}", {
-      dflt,
-      state,
-    });
+    logger.debug("{variable} variable not set; returning default {default}");
     return dflt;
   }
 
   const parsed = z.coerce.number().int().positive().safeParse(value);
   if (!parsed.success) {
     logger.warn(
-      `Invalid CLAUDE_CODE_HOOK_STDIN_MAX_BUF_LEN: "${value}". Using default ${dflt} bytes.`,
+      `Invalid value: "{value}". Falling back to default of {default}.`,
+      { value },
     );
     return dflt;
   }
