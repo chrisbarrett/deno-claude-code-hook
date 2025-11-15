@@ -1,6 +1,5 @@
 import { getFileSink } from "@logtape/file";
 import * as logtape from "@logtape/logtape";
-import * as cache from "@std/cache";
 const libCategory = "@chrisbarrett/claude-code-hook";
 
 import { logFile } from "./env.ts";
@@ -15,7 +14,7 @@ export const getLogger = (...categories: string[]) => {
  *  The configuration set here will be picked up inside the hook handler
  *  implementation. It must be called before you instantiate any hook function.
  */
-export const configureLogging = cache.memoize(async () => {
+export const configureLogging = async () => {
   const file = logFile();
 
   await logtape.configure({
@@ -40,4 +39,4 @@ export const configureLogging = cache.memoize(async () => {
       },
     ],
   });
-});
+};

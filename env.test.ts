@@ -1,5 +1,5 @@
 import { expect } from "@std/expect";
-import { persistEnvVar } from "./mod.ts";
+import { persistEnvVar } from "./env.ts";
 
 // Helper to set up a temporary env file
 const withTempEnvFile = async (fn: (envFile: string) => Promise<void>) => {
