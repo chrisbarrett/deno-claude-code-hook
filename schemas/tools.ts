@@ -664,8 +664,17 @@ const postToolInputs = {
 
       The exact schema depends on the specific tool. Refine `type` using an if
       or switch statement to get type-safe property access for common tools.
+
+      Can be either an object or a JSON string (which will be parsed
+      automatically).
    */
-    tool_response: z.record(z.string(), z.unknown()),
+    tool_response: z.union([
+      z.record(z.string(), z.unknown()).describe("JSON object"),
+      z
+        .string()
+        .transform((str) => JSON.parse(str))
+        .describe("stringified JSON"),
+    ]),
   }),
 };
 
