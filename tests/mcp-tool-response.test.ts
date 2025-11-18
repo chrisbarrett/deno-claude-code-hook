@@ -1,4 +1,4 @@
-/** Test that MCP tool responses can be JSON strings. */
+/** Test that MCP tool responses can be arbitrary types. */
 import { expect } from "@std/expect";
 import { runHook } from "../testing.ts";
 
@@ -54,3 +54,28 @@ Deno.test("postToolUse - handles MCP tool with object response", async () => {
     },
   });
 });
+
+Deno.test(
+  "postToolUse - handles MCP tool with array response (content array)",
+  async () => {
+    const result = await runHook(hookPath, {
+      session_id: "test-session",
+      transcript_path: "/path/to/transcript.jsonl",
+      cwd: "/path/to/cwd",
+      permission_mode: "acceptEdits",
+      hook_event_name: "PostToolUse",
+      tool_name: "mcp__plugin_emacs_emacs__claude-code-ide-mcp-project-info",
+      tool_input: {},
+      // This is an MCP content array - another valid format
+      tool_response: [{ type: "text", text: "No session context available" }],
+    });
+
+    // Should handle arrays too
+    expect(result).toMatchObject({
+      status: 0,
+      stdout: {
+        decision: "allow",
+      },
+    });
+  },
+);

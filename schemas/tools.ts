@@ -665,16 +665,13 @@ const postToolInputs = {
       The exact schema depends on the specific tool. Refine `type` using an if
       or switch statement to get type-safe property access for common tools.
 
-      Can be either an object or a JSON string (which will be parsed
-      automatically).
+      The general tool response format is currently unspecified in MCP. If you
+      want to handle a specific tool, consider using a Zod schema to try to
+      parse it, or YOLO by casting to `any`.
+
+      Use type guards or runtime checks to safely access response data.
    */
-    tool_response: z.union([
-      z.record(z.string(), z.unknown()).describe("JSON object"),
-      z
-        .string()
-        .transform((str) => JSON.parse(str))
-        .describe("stringified JSON"),
-    ]),
+    tool_response: z.unknown(),
   }),
 };
 
