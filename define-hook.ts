@@ -38,99 +38,96 @@ export type Context = {
     implementation must return undefined or a JSON payload of the given type;
     which will be validated.
  */
-export const defineHook =
-  <
-    In extends z.ZodType,
-    Out extends z.ZodType,
-    CtxExtra extends Record<string, any>,
-  >(
-    inputSchema: In,
-    outputSchema: Out,
-    extraContext: CtxExtra,
-  ): HookDef<In, Out, CtxExtra> =>
-  async (fn) => {
-    await configureLogging();
+export const defineHook = <
+  In extends z.ZodType,
+  Out extends z.ZodType,
+  CtxExtra extends Record<string, any>,
+>(
+  inputSchema: In,
+  outputSchema: Out,
+  extraContext: CtxExtra,
+): HookDef<In, Out, CtxExtra> =>
+async (fn) => {
+  await configureLogging();
 
-    const logger = getLogger("main");
-    logger.info`Execution started`;
+  const logger = getLogger("main");
+  logger.info`Execution started`;
 
+  try {
+    const stdin = await readStdin();
+
+    let json;
     try {
-      const stdin = await readStdin();
-
-      let json;
-      try {
-        json = JSON.parse(stdin);
-      } catch (cause) {
-        logger.error("stdin was not valid JSON: {*}", { stdin });
-        throw new Deno.errors.InvalidData("stdin was not valid JSON", {
-          cause,
-        });
-      }
-      const input = await inputSchema.parseAsync(json).catch((cause) => {
-        const errorMessage =
-          cause instanceof z.ZodError
-            ? z.prettifyError(cause)
-            : (cause as Error).message;
-
-        logger.error(
-          "Input validation failed:\n{errorMessage}\n\nValue: {value}",
-          {
-            stdin,
-            errorMessage,
-          },
-        );
-
-        throw new Deno.errors.InvalidData(
-          `Input validation failed:\n${errorMessage}`,
-          {
-            cause,
-          },
-        );
+      json = JSON.parse(stdin);
+    } catch (cause) {
+      logger.error("stdin was not valid JSON: {*}", { stdin });
+      throw new Deno.errors.InvalidData("stdin was not valid JSON", {
+        cause,
       });
+    }
+    const input = await inputSchema.parseAsync(json).catch((cause) => {
+      const errorMessage = cause instanceof z.ZodError
+        ? z.prettifyError(cause)
+        : (cause as Error).message;
 
-      logger.debug("Input parsed successfully. {*}", { input });
-
-      const value = await Promise.resolve(
-        fn(input, {
-          logger: logger.getChild("handler"),
-          ...extraContext,
-        }),
+      logger.error(
+        "Input validation failed:\n{errorMessage}\n\nValue: {value}",
+        {
+          stdin,
+          errorMessage,
+        },
       );
 
-      const result = await outputSchema
-        .optional()
-        .parseAsync(value)
-        .catch((cause) => {
-          const errorMessage =
-            cause instanceof z.ZodError
-              ? z.prettifyError(cause)
-              : (cause as Error).message;
+      throw new Deno.errors.InvalidData(
+        `Input validation failed:\n${errorMessage}`,
+        {
+          cause,
+        },
+      );
+    });
 
-          logger.error(
-            "Output validation failed:\n{errorMessage}\n\nValue: {value}",
-            { value, errorMessage },
-          );
+    logger.debug("Input parsed successfully. {*}", { input });
 
-          throw new Deno.errors.InvalidData("Output validation failed", {
-            cause,
-          });
+    const value = await Promise.resolve(
+      fn(input, {
+        logger: logger.getChild("handler"),
+        ...extraContext,
+      }),
+    );
+
+    const result = await outputSchema
+      .optional()
+      .parseAsync(value)
+      .catch((cause) => {
+        const errorMessage = cause instanceof z.ZodError
+          ? z.prettifyError(cause)
+          : (cause as Error).message;
+
+        logger.error(
+          "Output validation failed:\n{errorMessage}\n\nValue: {value}",
+          { value, errorMessage },
+        );
+
+        throw new Deno.errors.InvalidData("Output validation failed", {
+          cause,
         });
+      });
 
-      if (result === undefined) {
-        logger.info`Empty output from handler`;
-      } else {
-        logger.info("Sending output to Claude Code: {*}", { result });
+    if (result === undefined) {
+      logger.info`Empty output from handler`;
+    } else {
+      logger.info("Sending output to Claude Code: {*}", { result });
 
-        console.log(JSON.stringify(result));
-      }
-
-      logger.info("Execution complete.");
-    } catch (cause: any) {
-      logger.error(cause.message, { cause });
-      console.error(cause);
-      Deno.exit(1);
+      console.log(JSON.stringify(result));
     }
-  };
+
+    logger.info("Execution complete.");
+  } catch (cause: any) {
+    logger.error(cause.message, { cause });
+    console.error(cause);
+    Deno.exit(1);
+  }
+};
 
 const readStdin = async (): Promise<string> => {
   const logger = getLogger("readStdin");
